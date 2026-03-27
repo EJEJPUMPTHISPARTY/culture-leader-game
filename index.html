@@ -764,7 +764,7 @@ function resetRoulettePool() {
     item.remaining = item.total;
     item.round     = newRound;
     sbFetch("roulette_pool?id=eq." + item.id, "PATCH",
-      { remaining: item.total, round: newRound })
+      { remaining: item.total, round: newRound, item_name: item.name })
       .catch(function(e) { console.warn("풀 리셋 실패:", e.message); });
   });
   console.log("룰렛 " + newRound + "회차 시작!");
@@ -776,11 +776,21 @@ function loadRouletteSettings() {
     .then(function(r) { return r.json(); })
     .then(function(rows) {
       if (!rows || rows.length === 0) return;
-      ROULETTE_POOL = rows;
-      var totalRemaining = rows.reduce(function(s, r) { return s + r.remaining; }, 0);
-      var roundNum = rows[0] ? rows[0].round : 1;
-      var used = (rows[0] ? rows[0].total : 100) - totalRemaining;
-      console.log("룰렛 " + roundNum + "회차: " + used + "/" + (rows[0]?rows[0].total:100) + "회 사용, 잔여: " + totalRemaining);
+      // item_name → name으로 정규화
+      ROULETTE_POOL = rows.map(function(r) {
+        return {
+          id: r.id,
+          name: r.item_name || r.name,
+          remaining: r.remaining,
+          total: r.total,
+          round: r.round
+        };
+      });
+      var totalRemaining = ROULETTE_POOL.reduce(function(s, r) { return s + r.remaining; }, 0);
+      var roundNum = ROULETTE_POOL[0] ? ROULETTE_POOL[0].round : 1;
+      var used = (ROULETTE_POOL[0] ? ROULETTE_POOL[0].total : 100) - totalRemaining;
+      console.log("룰렛 풀 로드 완료:", ROULETTE_POOL);
+      console.log("룰렛 " + roundNum + "회차: " + used + "/" + (ROULETTE_POOL[0]?ROULETTE_POOL[0].total:100) + "회 사용, 잔여: " + totalRemaining);
     })
     .catch(function(e) { console.warn("룰렛 풀 로드 실패:", e.message); });
 }
