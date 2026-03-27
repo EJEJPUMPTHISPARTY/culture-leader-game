@@ -934,7 +934,6 @@ function loadMyDiamonds() {
 
 /* 지사별 댓글 불러오기 (지사 모달용) */
 function loadBranchComments(branch) {
-  // comments + users 테이블 함께 조회하여 본부/이름 표시
   return Promise.all([
     sbFetch("comments?branch=eq." + encodeURIComponent(branch) +
       "&select=emp_id,name,month,content,created_at&order=created_at.asc")
@@ -950,6 +949,7 @@ function loadBranchComments(branch) {
     });
     return comments.map(function(row) {
       return {
+        emp_id: row.emp_id,
         author: userMap[row.emp_id] || row.name,
         month:  row.month,
         text:   row.content
@@ -1379,6 +1379,45 @@ function openVillage(branch) {
   });
 
   document.getElementById("vModal").classList.add("on");
+
+  // Supabase: DB에서 해당 지사 댓글 불러오기
+  loadBranchComments(branch).then(function(dbComments) {
+    if (!dbComments || dbComments.length === 0) return;
+
+    // 월별로 댓글 그룹핑
+    var byMonth = {};
+    dbComments.forEach(function(c) {
+      if (!byMonth[c.month]) byMonth[c.month] = [];
+      byMonth[c.month].push(c);
+    });
+
+    // 각 월별 댓글 목록 업데이트
+    MONTHS.forEach(function(month, mi) {
+      var clEl = document.getElementById("cl-" + branch + "-" + mi);
+      var ccEl = document.getElementById("cc-" + branch + "-" + mi);
+      if (!clEl) return;
+
+      var monthCmts = byMonth[month] || [];
+      clEl.innerHTML = monthCmts.map(function(c) {
+        return "<div class='cmt-item'>"
+          + "<span class='cmt-author'>" + c.author + "</span>"
+          + "<span class='cmt-text'>" + c.text + "</span>"
+          + "</div>";
+      }).join("");
+
+      if (ccEl) ccEl.textContent = "댓글 " + monthCmts.length + "개";
+
+      // 내가 이미 댓글 달았는지 확인 (DB 기준)
+      var myEmpId = state.userId;
+      var iAlreadyCommented = dbComments.some(function(c) {
+        return c.emp_id === myEmpId && c.month === month;
+      });
+      if (iAlreadyCommented) {
+        var crEl = document.getElementById("cr-" + branch + "-" + mi);
+        if (crEl) crEl.outerHTML = "<div class='already'>이미 댓글을 작성하셨습니다.</div>";
+      }
+    });
+  });
 }
 
 function switchVTab(branch, key) {
