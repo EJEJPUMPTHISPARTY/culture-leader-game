@@ -89,22 +89,25 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
   display:flex;flex-direction:column;gap:14px;
   touch-action:auto;box-sizing:border-box;
 }
-.login-row{display:flex;align-items:center;gap:12px;}
+.login-row{display:flex;align-items:center;gap:10px;}
 .login-row label{
-  font-size:15px;font-weight:700;color:#0C4DA2;
-  width:44px;text-align:right;flex-shrink:0;
+  font-size:14px;font-weight:700;color:#0C4DA2;
+  width:40px;text-align:right;flex-shrink:0;
 }
 .login-row input,
 .login-row select{
-  flex:1;min-height:48px;height:48px;
+  flex:1;min-width:0;
+  height:48px;
   background:#f5f8ff;border:1.5px solid #d0d8e8;border-radius:8px;
-  padding:0 14px;color:#1a2a35;
+  padding:0 12px;color:#1a2a35;
   font-size:16px;font-family:inherit;outline:none;
   -webkit-appearance:none;appearance:none;
-  touch-action:manipulation;box-sizing:border-box;
+  touch-action:manipulation;
+  box-sizing:border-box;
+  width:100%;
 }
 .login-row input::placeholder{color:#aab8cc;}
-.login-row input:focus,.login-row select:focus{border-color:#0C4DA2;background:#fff;outline:2px solid rgba(12,77,162,.15);}
+.login-row input:focus,.login-row select:focus{border-color:#0C4DA2;background:#fff;}
 .login-row select option{background:#fff;color:#1a2a35;}
 .login-btn{
   width:100%;min-height:50px;margin-top:4px;
@@ -116,13 +119,13 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 }
 /* align button right edge with input right edge */
 .login-row-btn{
-  display:flex;gap:12px;
+  display:flex;gap:10px;
 }
 .login-row-btn .btn-spacer{
-  width:44px;flex-shrink:0;
+  width:40px;flex-shrink:0;
 }
 .login-row-btn .login-btn{
-  flex:1;
+  flex:1;min-width:0;
 }
 .login-btn:hover{background:#083a7a;}
 .login-btn:active{background:#083a7a;transform:scale(.98);}
@@ -482,6 +485,12 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .rlt-dia-change.minus{color:#e53935;}
 .rlt-dia-change.plus{color:#00A651;}
 
+
+.t-btn-disabled{
+  background:#f0f0f0 !important;color:#bbb !important;
+  border-color:#e0e0e0 !important;cursor:not-allowed !important;
+  opacity:0.6;
+}
 </style>
 </head>
 <body>
@@ -747,6 +756,81 @@ function sbFetch(path, method, body) {
   });
 }
 
+
+/* 룰렛 확률 설정 불러오기 */
+
+/* 룰렛 풀 새 회차 초기화 */
+function resetRoulettePool() {
+  if (ROULETTE_POOL.length === 0) return;
+  var newRound = (ROULETTE_POOL[0].round || 1) + 1;
+  ROULETTE_POOL.forEach(function(item) {
+    item.remaining = item.total;
+    item.round     = newRound;
+    sbFetch("roulette_pool?id=eq." + item.id, "PATCH",
+      { remaining: item.total, round: newRound })
+      .catch(function(e) { console.warn("풀 리셋 실패:", e.message); });
+  });
+  console.log("룰렛 " + newRound + "회차 시작!");
+  loadRouletteSettings(); // 휠 색상 새로고침
+}
+
+function loadRouletteSettings() {
+  // roulette_pool에서 남은 티켓 수 불러오기
+  return sbFetch("roulette_pool?select=id,item_name,remaining,total,round&order=id.asc")
+    .then(function(r) { return r.json(); })
+    .then(function(rows) {
+      if (!rows || rows.length === 0) return;
+      console.log("Supabase: 룰렛 풀 로드 성공", rows);
+
+      // 글로벌 풀 저장
+      ROULETTE_POOL = rows;
+
+      // ROULETTE 색상 매핑 (roulette_settings 색상 유지)
+      var colorMap = {
+        "커피쿠폰":   "#FDB813",
+        "다이아 10개":"#7B5EA7",
+        "다이아 5개": "#9B59B6",
+        "다음기회에": "#9eabb5"
+      };
+      var colorMap2 = {
+        "다음기회에": "#8a9aa5"
+      };
+
+      // ROULETTE 8칸 재구성: 남은 비율에 따라 배분
+      var totalRemaining = rows.reduce(function(s, r) { return s + r.remaining; }, 0);
+      var newRoulette = [];
+      if (totalRemaining === 0) {
+        // 모두 소진 → 기본 색상으로 표시
+        ROULETTE = [
+          {name:"커피쿠폰",   color:"#FDB813"},
+          {name:"다음기회에", color:"#9eabb5"},
+          {name:"다음기회에", color:"#8a9aa5"},
+          {name:"다이아 10개",color:"#7B5EA7"},
+          {name:"다음기회에", color:"#9eabb5"},
+          {name:"커피쿠폰",   color:"#FDB813"},
+          {name:"다이아 5개", color:"#9B59B6"},
+          {name:"다음기회에", color:"#8a9aa5"}
+        ];
+      } else {
+        rows.forEach(function(row, ri) {
+          var slots = Math.max(1, Math.round(row.remaining / totalRemaining * 8));
+          var col = ri % 2 === 0 ? (colorMap[row.item_name]||"#9eabb5") : (colorMap2[row.item_name]||colorMap[row.item_name]||"#8a9aa5");
+          for (var i = 0; i < slots; i++) {
+            newRoulette.push({ name: row.item_name, color: colorMap[row.item_name] || "#9eabb5" });
+          }
+        });
+        while (newRoulette.length < 8) newRoulette.push({name:"다음기회에", color:"#8a9aa5"});
+        ROULETTE = newRoulette.slice(0, 8);
+      }
+
+      // 진행 상황 로그
+      var roundNum = rows[0] ? rows[0].round : 1;
+      var used = (rows[0] ? rows[0].total : 100) - totalRemaining;
+      console.log("룰렛 " + roundNum + "회차: " + used + "/" + (rows[0]?rows[0].total:100) + "회 사용됨, 남은 티켓: " + totalRemaining);
+    })
+    .catch(function(e) { console.warn("룰렛 풀 로드 실패:", e.message); });
+}
+
 /* 지사 현황 불러오기 */
 function loadBranchStatus() {
   console.log("Supabase: 지사 현황 로드 시작...");
@@ -908,6 +992,8 @@ var ROULETTE = [
   {name:"다음기회에", color:"#8a9aa5"}
 ];
 var LEADERS = ["이승근","이현민","조지혁","강제혁","이경필","이성기","조상진","정상민","이대로","박태수","홍성달","이정호","유진만","엄주호","이규호","강무중","김명환","신성진","신하늘","선동률","손경식","송진혁","김연식","오세훈","이현용","강환웅","손성욱","정형교","임승원","정상기"];
+var LEADER_INTRO = {"대구지사(영업)":"안녕하세요! 대구지사(영업) 컬처리더 이승근입니다.","부산지사(영업)":"안녕하세요! 부산지사(영업) 컬처리더 이현민입니다.","울산지사(영업)":"안녕하세요! 울산지사(영업) 컬처리더 조지혁입니다.","경남지사(영업)":"안녕하세요! 경남지사(영업) 컬처리더 강제혁입니다.","대전·충청지사(영업)":"안녕하세요! 대전·충청지사(영업) 컬처리더 이경필입니다.","광주지사(영업)":"안녕하세요! 광주지사(영업) 컬처리더 이성기입니다.","전주지사(영업)":"안녕하세요! 전주지사(영업) 컬처리더 조상진입니다.","강북지사(서비스)":"안녕하세요! 강북지사(서비스) 컬처리더 정상민입니다.","강서지사(서비스)":"안녕하세요! 강서지사(서비스) 컬처리더 이대로입니다.","인천지사(서비스)":"안녕하세요! 인천지사(서비스) 컬처리더 박태수입니다.","강남지사(서비스)":"안녕하세요! 강남지사(서비스) 컬처리더 홍성달입니다.","분당지사(서비스)":"안녕하세요! 분당지사(서비스) 컬처리더 이정호입니다.","수원지사(서비스)":"안녕하세요! 수원지사(서비스) 컬처리더 유진만입니다.","강원지사(서비스)":"안녕하세요! 강원지사(서비스) 컬처리더 엄주호입니다.","대구지사(서비스)":"안녕하세요! 대구지사(서비스) 컬처리더 이규호입니다.","울산지사(서비스)":"안녕하세요! 울산지사(서비스) 컬처리더 강무중입니다.","부산지사(서비스)":"안녕하세요! 부산지사(서비스) 컬처리더 김명환입니다.","경남지사(서비스)":"안녕하세요! 경남지사(서비스) 컬처리더 신성진입니다.","대전·충청지사(서비스)":"안녕하세요! 대전·충청지사(서비스) 컬처리더 신하늘입니다.","광주지사(서비스)":"안녕하세요! 광주지사(서비스) 컬처리더 선동률입니다.","전주지사(서비스)":"안녕하세요! 전주지사(서비스) 컬처리더 손경식입니다.","제주지사(서비스)":"안녕하세요! 제주지사(서비스) 컬처리더 송진혁입니다.","강북·강원지사(설치)":"안녕하세요! 강북·강원지사(설치) 컬처리더 김연식입니다.","강남지사(설치)":"안녕하세요! 강남지사(설치) 컬처리더 오세훈입니다.","인천지사(설치)":"안녕하세요! 인천지사(설치) 컬처리더 이현용입니다.","중부지사(설치)":"안녕하세요! 중부지사(설치) 컬처리더 강환웅입니다.","대구·울산지사(설치)":"안녕하세요! 대구·울산지사(설치) 컬처리더 손성욱입니다.","부산·경남지사(설치)":"안녕하세요! 부산·경남지사(설치) 컬처리더 정형교입니다.","대전지사(설치)":"안녕하세요! 대전지사(설치) 컬처리더 임승원입니다.","광주·전주·제주지사(설치)":"안녕하세요! 광주·전주·제주지사(설치) 컬처리더 정상기입니다."};
+
 var LEADER_RANK = {"대구지사(영업)":"책임","부산지사(영업)":"책임","울산지사(영업)":"책임","경남지사(영업)":"책임","대전·충청지사(영업)":"책임","광주지사(영업)":"책임","전주지사(영업)":"책임","강북지사(서비스)":"책임","강서지사(서비스)":"책임","인천지사(서비스)":"책임","강남지사(서비스)":"책임","분당지사(서비스)":"책임","수원지사(서비스)":"책임","강원지사(서비스)":"책임","대구지사(서비스)":"책임","울산지사(서비스)":"책임","부산지사(서비스)":"책임","경남지사(서비스)":"책임","대전·충청지사(서비스)":"책임","광주지사(서비스)":"책임","전주지사(서비스)":"책임","제주지사(서비스)":"책임","강북·강원지사(설치)":"책임","강남지사(설치)":"기장","인천지사(설치)":"책임","중부지사(설치)":"책임","대구·울산지사(설치)":"책임","부산·경남지사(설치)":"기성대우","대전지사(설치)":"책임","광주·전주·제주지사(설치)":"기성대우"};
 var ACT_TMPL = [
   "에서 5월 가정의 달을 맞아 가족사진 공유 이벤트를 진행했습니다.",
@@ -1019,6 +1105,7 @@ function makeTile(type, x, y, w, h, label, bi) {
     document.getElementById("tip").classList.remove("show");
   });
 
+  // Desktop: click event
   el.addEventListener("click", function(e) {
     if (wasDrag) return;
     e.stopPropagation();
@@ -1026,6 +1113,23 @@ function makeTile(type, x, y, w, h, label, bi) {
     if (type === "central") openCentral();
     else openVillage(BRANCHES[bi]);
   });
+  // Mobile: touchend for reliable tap detection
+  var tileTouch = {x:0, y:0};
+  el.addEventListener("touchstart", function(e) {
+    tileTouch.x = e.touches[0].clientX;
+    tileTouch.y = e.touches[0].clientY;
+  }, {passive:true});
+  el.addEventListener("touchend", function(e) {
+    var dx = Math.abs(e.changedTouches[0].clientX - tileTouch.x);
+    var dy = Math.abs(e.changedTouches[0].clientY - tileTouch.y);
+    if (dx < 10 && dy < 10) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById("tip").classList.remove("show");
+      if (type === "central") openCentral();
+      else openVillage(BRANCHES[bi]);
+    }
+  }, {passive:false});
   return el;
 }
 
@@ -1130,7 +1234,7 @@ function setupPinch() {
     } else if (e.touches.length === 1 && isDrag) {
       var dx = e.touches[0].clientX - (dragStart.x + off.x);
       var dy = e.touches[0].clientY - (dragStart.y + off.y);
-      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) wasDrag = true;
+      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) wasDrag = true;
       off.x = e.touches[0].clientX - dragStart.x;
       off.y = e.touches[0].clientY - dragStart.y;
       applyT();
@@ -1139,7 +1243,7 @@ function setupPinch() {
 
   wrap.addEventListener("touchend", function(e) {
     if (e.touches.length < 2) ld = 0;
-    if (e.touches.length === 0) { isDrag = false; setTimeout(function(){ wasDrag = false; }, 80); }
+    if (e.touches.length === 0) { isDrag = false; setTimeout(function(){ wasDrag = false; }, 150); }
   }, {passive:true});
   wrap.addEventListener("touchcancel", function() { isDrag=false; ld=0; }, {passive:true});
 }
@@ -1175,6 +1279,7 @@ function doLogin() {
     document.getElementById("hudName").innerHTML = "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>" + (dept||"") + "/" + name + "님</span>";
     document.getElementById("diaCount").textContent = state.diamonds;
 
+    loadRouletteSettings();
     loadBranchStatus().then(function() { initMap(); }).catch(function() { initMap(); });
     loadOrCreateUser(id, name, dept);
     setupDrag();
@@ -1218,11 +1323,18 @@ function openVillage(branch) {
   var lPane = document.createElement("div");
   lPane.className = "t-pane on";
   lPane.id = "vp-leader";
-  lPane.innerHTML = "<div style='display:flex;flex-direction:column;align-items:center;gap:13px;padding:10px 0'>"
-    + "<div style='width:86px;height:86px;background:rgba(255,255,255,.15);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(255,255,255,.5);border:2px solid rgba(255,255,255,.18)'>사진</div>"
-    + "<div style='text-align:center'>"
-    + "<div style='font-size:18px;font-weight:700;color:#fff;margin-bottom:4px'>"+d.leader+"</div>"
-    + "<div style='font-size:12px;color:var(--green);font-weight:600'>"+branch+" 컬처리더</div>"
+  lPane.innerHTML = "<div style='display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 0'>"
+    + "<div style='width:100%;background:#f5f9fb;border-radius:14px;padding:18px 16px;display:flex;gap:16px;align-items:center;margin-bottom:12px;border:1px solid #d0e4ee'>"
+    + "<div style='width:80px;height:80px;border-radius:50%;background:#e0edf4;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#7a9aaa;border:2px solid #b0cfe0;overflow:hidden'>"
+    + "<span style='font-size:28px'>👤</span></div>"
+    + "<div>"
+    + "<div style='font-size:11px;color:#00A651;font-weight:700;margin-bottom:3px'>" + branch + " 컬처리더</div>"
+    + "<div style='font-size:20px;font-weight:900;color:#0C4DA2;margin-bottom:3px'>" + d.leader + "</div>"
+    + "<div style='font-size:12px;color:#7a9aaa;font-weight:500'>" + (LEADER_RANK[branch]||"책임") + "</div>"
+    + "</div></div>"
+    + "<div style='width:100%;background:#fff;border:1px solid #d0e4ee;border-radius:12px;padding:14px 16px;font-size:13px;color:#2a4050;line-height:1.7'>"
+    + (LEADER_INTRO[branch] || (branch + " 컬처리더 " + d.leader + "입니다. 올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다!"))
+    + "<br><br>올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다! 🙌"
     + "</div>"
     + "<div style='background:rgba(255,255,255,.1);border-radius:11px;padding:13px 16px;font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;width:100%;text-align:center'>"
     + "안녕하세요! "+branch+" 컬처리더 "+d.leader+"입니다.<br>올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다!</div></div>";
@@ -1231,7 +1343,9 @@ function openVillage(branch) {
   // Monthly tabs
   d.activities.forEach(function(act, idx) {
     var btn = document.createElement("button");
-    btn.className   = "t-btn";
+    // 12월(idx=7) 버튼 제거
+    if (idx === 7) return;
+    btn.className = "t-btn";
     btn.textContent = MONTHS[idx]+" 활동";
     btn.dataset.vtab = String(idx);
     monthTabEl.appendChild(btn);
@@ -1340,7 +1454,15 @@ function openMyActivity() {
 }
 
 /* ── ROULETTE ───────────────────────────────────────── */
-var wheelRot = -Math.PI/2 - Math.PI/8; // align slice 0 to 12 o'clock on load
+var wheelRot = -Math.PI/2 - Math.PI/8;
+// 룰렛 확률 구간 (Supabase에서 불러온 값으로 덮어씀)
+var ROULETTE_POOL = [];
+var ROULETTE_PROBS = [
+  {name:"커피쿠폰",   start:0.00, end:0.10},
+  {name:"다이아 10개",start:0.10, end:0.30},
+  {name:"다이아 5개", start:0.30, end:0.60},
+  {name:"다음기회에", start:0.60, end:1.00}
+]; // align slice 0 to 12 o'clock on load
 
 function drawWheel() {
   var cv = document.getElementById("rltCanvas");
@@ -1436,8 +1558,47 @@ function spinRoulette() {
   logDiamond(-1, "룰렛소모", "룰렛 응모");
   document.getElementById("spinBtn").disabled = true;
   document.getElementById("notEnough").style.display = "none";
-  var rand = Math.random();
-  var ri = rand<0.10 ? 0 : rand<0.30 ? 3 : rand<0.60 ? 6 : [1,2,4,7][Math.floor(Math.random()*4)];
+  // ── 풀 기반 당첨 결정 ─────────────────────────────
+  var wonName = "다음기회에";
+
+  if (ROULETTE_POOL.length === 0) {
+    // 풀 미로드 시 기본 확률로 폴백
+    var rand = Math.random();
+    wonName = rand < 0.05 ? "커피쿠폰" : rand < 0.15 ? "다이아 10개" : rand < 0.30 ? "다이아 5개" : "다음기회에";
+  } else {
+    // 남은 티켓 합계 계산
+    var totalLeft = ROULETTE_POOL.reduce(function(s, r) { return s + r.remaining; }, 0);
+
+    if (totalLeft <= 0) {
+      // 전부 소진 → 새 회차 시작
+      console.log("룰렛 풀 소진! 새 회차 시작...");
+      resetRoulettePool();
+      wonName = "다음기회에"; // 리셋 중이니 이번 한 번은 다음기회에
+    } else {
+      // 남은 티켓 중 랜덤 1개 뽑기
+      var pick = Math.floor(Math.random() * totalLeft);
+      var cumul = 0;
+      for (var pi = 0; pi < ROULETTE_POOL.length; pi++) {
+        cumul += ROULETTE_POOL[pi].remaining;
+        if (pick < cumul) {
+          wonName = ROULETTE_POOL[pi].name;
+          // 해당 아이템 remaining -1
+          ROULETTE_POOL[pi].remaining -= 1;
+          // Supabase 업데이트
+          sbFetch("roulette_pool?id=eq." + ROULETTE_POOL[pi].id, "PATCH",
+            { remaining: ROULETTE_POOL[pi].remaining })
+            .catch(function(e) { console.warn("풀 업데이트 실패:", e.message); });
+          break;
+        }
+      }
+    }
+  }
+
+  // ROULETTE 배열에서 해당 아이템의 인덱스 찾기 (휠 정지 위치)
+  var ri = ROULETTE.length - 1;
+  for (var wi = 0; wi < ROULETTE.length; wi++) {
+    if (ROULETTE[wi].name === wonName) { ri = wi; break; }
+  }
   var slice = Math.PI*2/ROULETTE.length;
   var NEEDLE = -Math.PI/2;
   var delta = (NEEDLE - ri*slice - slice/2) - wheelRot;
