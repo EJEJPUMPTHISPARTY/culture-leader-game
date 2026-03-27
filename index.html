@@ -238,19 +238,20 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
   align-items:center;justify-content:center;
   z-index:300;overflow-y:auto;touch-action:pan-y;
   -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
-  padding:calc(16px + var(--sat)) calc(10px + var(--sar)) calc(16px + var(--sab)) calc(10px + var(--sal));
+  padding:calc(16px + var(--sat)) calc(8px + var(--sar)) calc(16px + var(--sab)) calc(8px + var(--sal));
 }
 .overlay.on{display:flex;}
 .modal{
   background:#fff;border-radius:16px;
   width:540px;max-width:100%;flex-shrink:0;
+  overflow-x:hidden;
   max-height:calc(100dvh - 36px);overflow-y:auto;
   box-shadow:0 20px 60px rgba(0,0,0,.45);
   border:2px solid rgba(255,255,255,.22);
   -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
 }
 /* scroll-t and scroll-b removed */
-.m-inner{padding:16px 22px 20px;color:#1a2a35;}
+.m-inner{padding:16px 16px 20px;color:#1a2a35;box-sizing:border-box;width:100%;}
 .m-close-bar{
   display:flex;justify-content:center;
   padding:16px 0 4px;
@@ -296,7 +297,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .prog-wrap{background:#d0e8f0;border-radius:8px;overflow:hidden;height:7px;margin-bottom:5px;}
 .prog-bar{height:100%;background:#00A651;border-radius:8px;transition:width .5s;}
 .prog-info{font-size:11px;color:#7a9aaa;margin-bottom:10px;}
-.act-card{background:#f5f9fb;border-radius:12px;padding:13px 15px;border:1px solid #d0e4ee;}
+.act-card{background:#f5f9fb;border-radius:12px;padding:12px 12px;border:1px solid #d0e4ee;box-sizing:border-box;width:100%;overflow:hidden;}
 .act-month{font-size:11px;font-weight:700;color:#00A651;margin-bottom:4px;}
 .act-desc{font-size:13px;color:#2a4050;line-height:1.6;margin-bottom:9px;}
 .cmt-sec{border-top:1px solid #d0e4ee;padding-top:9px;}
@@ -304,9 +305,9 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .cmt-list{margin-bottom:7px;max-height:120px;overflow-y:auto;}
 .cmt-item{font-size:12px;color:#2a4050;padding:3px 0;border-bottom:1px solid #e0edf4;display:flex;gap:7px;}
 .cmt-author{font-weight:700;color:#00A651;flex-shrink:0;}
-.cmt-row{display:flex;gap:6px;}
+.cmt-row{display:flex;gap:6px;width:100%;box-sizing:border-box;}
 .cmt-inp{
-  flex:1;background:#edf4f8;border:1px solid #b0cfe0;
+  flex:1;min-width:0;background:#edf4f8;border:1px solid #b0cfe0;
   border-radius:8px;padding:0 12px;color:#1a2a35;
   font-size:16px;font-family:inherit;outline:none;
   -webkit-appearance:none;height:44px;touch-action:manipulation;
@@ -490,6 +491,16 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
   background:#f0f0f0 !important;color:#bbb !important;
   border-color:#e0e0e0 !important;cursor:not-allowed !important;
   opacity:0.6;
+}
+
+@media (max-width: 480px) {
+  .modal{ border-radius:12px; }
+  .m-inner{ padding:12px 12px 16px; }
+  .act-card{ padding:10px 10px; }
+  .v-tab-months-wrap{ margin-bottom:8px; }
+  .t-btn{ font-size:10px; padding:0 8px; height:34px; }
+  .cmt-inp{ font-size:15px; }
+  .cmt-sub{ padding:0 10px; font-size:12px; }
 }
 </style>
 </head>
@@ -771,62 +782,19 @@ function resetRoulettePool() {
       .catch(function(e) { console.warn("풀 리셋 실패:", e.message); });
   });
   console.log("룰렛 " + newRound + "회차 시작!");
-  loadRouletteSettings(); // 휠 색상 새로고침
 }
 
 function loadRouletteSettings() {
-  // roulette_pool에서 남은 티켓 수 불러오기
+  // roulette_pool에서 남은 티켓 수만 불러오기 (룰렛판 모양은 절대 변경하지 않음)
   return sbFetch("roulette_pool?select=id,item_name,remaining,total,round&order=id.asc")
     .then(function(r) { return r.json(); })
     .then(function(rows) {
       if (!rows || rows.length === 0) return;
-      console.log("Supabase: 룰렛 풀 로드 성공", rows);
-
-      // 글로벌 풀 저장
       ROULETTE_POOL = rows;
-
-      // ROULETTE 색상 매핑 (roulette_settings 색상 유지)
-      var colorMap = {
-        "커피쿠폰":   "#FDB813",
-        "다이아 10개":"#7B5EA7",
-        "다이아 5개": "#9B59B6",
-        "다음기회에": "#9eabb5"
-      };
-      var colorMap2 = {
-        "다음기회에": "#8a9aa5"
-      };
-
-      // ROULETTE 8칸 재구성: 남은 비율에 따라 배분
       var totalRemaining = rows.reduce(function(s, r) { return s + r.remaining; }, 0);
-      var newRoulette = [];
-      if (totalRemaining === 0) {
-        // 모두 소진 → 기본 색상으로 표시
-        ROULETTE = [
-          {name:"커피쿠폰",   color:"#FDB813"},
-          {name:"다음기회에", color:"#9eabb5"},
-          {name:"다음기회에", color:"#8a9aa5"},
-          {name:"다이아 10개",color:"#7B5EA7"},
-          {name:"다음기회에", color:"#9eabb5"},
-          {name:"커피쿠폰",   color:"#FDB813"},
-          {name:"다이아 5개", color:"#9B59B6"},
-          {name:"다음기회에", color:"#8a9aa5"}
-        ];
-      } else {
-        rows.forEach(function(row, ri) {
-          var slots = Math.max(1, Math.round(row.remaining / totalRemaining * 8));
-          var col = ri % 2 === 0 ? (colorMap[row.item_name]||"#9eabb5") : (colorMap2[row.item_name]||colorMap[row.item_name]||"#8a9aa5");
-          for (var i = 0; i < slots; i++) {
-            newRoulette.push({ name: row.item_name, color: colorMap[row.item_name] || "#9eabb5" });
-          }
-        });
-        while (newRoulette.length < 8) newRoulette.push({name:"다음기회에", color:"#8a9aa5"});
-        ROULETTE = newRoulette.slice(0, 8);
-      }
-
-      // 진행 상황 로그
       var roundNum = rows[0] ? rows[0].round : 1;
       var used = (rows[0] ? rows[0].total : 100) - totalRemaining;
-      console.log("룰렛 " + roundNum + "회차: " + used + "/" + (rows[0]?rows[0].total:100) + "회 사용됨, 남은 티켓: " + totalRemaining);
+      console.log("룰렛 " + roundNum + "회차: " + used + "/" + (rows[0]?rows[0].total:100) + "회 사용, 잔여: " + totalRemaining);
     })
     .catch(function(e) { console.warn("룰렛 풀 로드 실패:", e.message); });
 }
