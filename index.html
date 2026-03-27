@@ -287,7 +287,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .branch-hdr{background:#00A651;color:#fff;font-size:12px;font-weight:700;padding:4px 12px;border-radius:6px;margin-bottom:7px;}
 .m-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
 .m-card{background:#00A651;border-radius:10px;padding:8px;text-align:center;}
-.m-photo{width:100%;aspect-ratio:1;background:rgba(255,255,255,.2);border-radius:8px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;}
+.m-photo{width:100%;aspect-ratio:1;background:#e0edf4;border-radius:8px;margin-bottom:5px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;}
 .m-name{font-size:11px;font-weight:700;color:#fff;}
 
 /* VILLAGE */
@@ -995,6 +995,7 @@ var ROULETTE = [
 var LEADERS = ["이승근","이현민","조지혁","강제혁","이경필","이성기","조상진","정상민","이대로","박태수","홍성달","이정호","유진만","엄주호","이규호","강무중","김명환","신성진","신하늘","선동률","손경식","송진혁","김연식","오세훈","이현용","강환웅","손성욱","정형교","임승원","정상기"];
 var LEADER_INTRO = {"대구지사(영업)":"안녕하세요! 대구지사(영업) 컬처리더 이승근입니다.","부산지사(영업)":"안녕하세요! 부산지사(영업) 컬처리더 이현민입니다.","울산지사(영업)":"안녕하세요! 울산지사(영업) 컬처리더 조지혁입니다.","경남지사(영업)":"안녕하세요! 경남지사(영업) 컬처리더 강제혁입니다.","대전·충청지사(영업)":"안녕하세요! 대전·충청지사(영업) 컬처리더 이경필입니다.","광주지사(영업)":"안녕하세요! 광주지사(영업) 컬처리더 이성기입니다.","전주지사(영업)":"안녕하세요! 전주지사(영업) 컬처리더 조상진입니다.","강북지사(서비스)":"안녕하세요! 강북지사(서비스) 컬처리더 정상민입니다.","강서지사(서비스)":"안녕하세요! 강서지사(서비스) 컬처리더 이대로입니다.","인천지사(서비스)":"안녕하세요! 인천지사(서비스) 컬처리더 박태수입니다.","강남지사(서비스)":"안녕하세요! 강남지사(서비스) 컬처리더 홍성달입니다.","분당지사(서비스)":"안녕하세요! 분당지사(서비스) 컬처리더 이정호입니다.","수원지사(서비스)":"안녕하세요! 수원지사(서비스) 컬처리더 유진만입니다.","강원지사(서비스)":"안녕하세요! 강원지사(서비스) 컬처리더 엄주호입니다.","대구지사(서비스)":"안녕하세요! 대구지사(서비스) 컬처리더 이규호입니다.","울산지사(서비스)":"안녕하세요! 울산지사(서비스) 컬처리더 강무중입니다.","부산지사(서비스)":"안녕하세요! 부산지사(서비스) 컬처리더 김명환입니다.","경남지사(서비스)":"안녕하세요! 경남지사(서비스) 컬처리더 신성진입니다.","대전·충청지사(서비스)":"안녕하세요! 대전·충청지사(서비스) 컬처리더 신하늘입니다.","광주지사(서비스)":"안녕하세요! 광주지사(서비스) 컬처리더 선동률입니다.","전주지사(서비스)":"안녕하세요! 전주지사(서비스) 컬처리더 손경식입니다.","제주지사(서비스)":"안녕하세요! 제주지사(서비스) 컬처리더 송진혁입니다.","강북·강원지사(설치)":"안녕하세요! 강북·강원지사(설치) 컬처리더 김연식입니다.","강남지사(설치)":"안녕하세요! 강남지사(설치) 컬처리더 오세훈입니다.","인천지사(설치)":"안녕하세요! 인천지사(설치) 컬처리더 이현용입니다.","중부지사(설치)":"안녕하세요! 중부지사(설치) 컬처리더 강환웅입니다.","대구·울산지사(설치)":"안녕하세요! 대구·울산지사(설치) 컬처리더 손성욱입니다.","부산·경남지사(설치)":"안녕하세요! 부산·경남지사(설치) 컬처리더 정형교입니다.","대전지사(설치)":"안녕하세요! 대전지사(설치) 컬처리더 임승원입니다.","광주·전주·제주지사(설치)":"안녕하세요! 광주·전주·제주지사(설치) 컬처리더 정상기입니다."};
 
+var LEADER_EMP_ID = {"대구지사(영업)":"2022605","부산지사(영업)":"2032546","울산지사(영업)":"2021510","경남지사(영업)":"2021501","대전·충청지사(영업)":"2017555","광주지사(영업)":"2026040","전주지사(영업)":"2018128","강북지사(서비스)":"2021978","강서지사(서비스)":"2023903","인천지사(서비스)":"2022982","강남지사(서비스)":"2020017","분당지사(서비스)":"2023865","수원지사(서비스)":"2021340","강원지사(서비스)":"2022516","대구지사(서비스)":"2023873","울산지사(서비스)":"2026252","부산지사(서비스)":"2022001","경남지사(서비스)":"2023849","대전·충청지사(서비스)":"2022010","광주지사(서비스)":"2022486","전주지사(서비스)":"2007924","제주지사(서비스)":"2024683","강북·강원지사(설치)":"2018632","강남지사(설치)":"3018202","인천지사(설치)":"2019957","중부지사(설치)":"2012634","대구·울산지사(설치)":"2020831","부산·경남지사(설치)":"3016480","대전지사(설치)":"2028298","광주·전주·제주지사(설치)":"3012913"}; // 사번: 컬처리더 사번 (사진 로드용)
 var LEADER_RANK = {"대구지사(영업)":"책임","부산지사(영업)":"책임","울산지사(영업)":"책임","경남지사(영업)":"책임","대전·충청지사(영업)":"책임","광주지사(영업)":"책임","전주지사(영업)":"책임","강북지사(서비스)":"책임","강서지사(서비스)":"책임","인천지사(서비스)":"책임","강남지사(서비스)":"책임","분당지사(서비스)":"책임","수원지사(서비스)":"책임","강원지사(서비스)":"책임","대구지사(서비스)":"책임","울산지사(서비스)":"책임","부산지사(서비스)":"책임","경남지사(서비스)":"책임","대전·충청지사(서비스)":"책임","광주지사(서비스)":"책임","전주지사(서비스)":"책임","제주지사(서비스)":"책임","강북·강원지사(설치)":"책임","강남지사(설치)":"기장","인천지사(설치)":"책임","중부지사(설치)":"책임","대구·울산지사(설치)":"책임","부산·경남지사(설치)":"기성대우","대전지사(설치)":"책임","광주·전주·제주지사(설치)":"기성대우"};
 var ACT_TMPL = [
   "에서 5월 가정의 달을 맞아 가족사진 공유 이벤트를 진행했습니다.",
@@ -1009,9 +1010,9 @@ var ACT_TMPL = [
 var SAMPLE_CMTS = ["정말 멋진 활동이네요!","우리 지사 화이팅!","수고 많으셨습니다.","다음 활동도 기대합니다!","팀워크가 느껴져요","좋은 활동 감사합니다","응원합니다!","함께해서 즐거웠어요"];
 var CMT_AUTHORS = ["김민준","이서연","박지우","최예린","정태양","윤하늘","강민서","장수빈"];
 var MEMBERS_DATA = [
-  {branch:"영업지사",  members:["이승근","이현민","조지혁","강제혁","이경필","이성기","조상진"]},
-  {branch:"서비스지사",members:["정상민","이대로","박태수","홍성달","이정호","유진만","엄주호","이규호","강무중","김명환","신성진","신하늘","선동률","손경식","송진혁"]},
-  {branch:"설치지사",  members:["김연식","오세훈","이현용","강환웅","손성욱","정형교","임승원","정상기"]}
+  {branch:"영업지사", members:[{branch:"대구지사(영업)",emp_id:"2022605",name:"이승근"},{branch:"부산지사(영업)",emp_id:"2032546",name:"이현민"},{branch:"울산지사(영업)",emp_id:"2021510",name:"조지혁"},{branch:"경남지사(영업)",emp_id:"2021501",name:"강제혁"},{branch:"대전·충청지사(영업)",emp_id:"2017555",name:"이경필"},{branch:"광주지사(영업)",emp_id:"2026040",name:"이성기"},{branch:"전주지사(영업)",emp_id:"2018128",name:"조상진"}]},
+  {branch:"서비스지사", members:[{branch:"강북지사(서비스)",emp_id:"2021978",name:"정상민"},{branch:"강서지사(서비스)",emp_id:"2023903",name:"이대로"},{branch:"인천지사(서비스)",emp_id:"2022982",name:"박태수"},{branch:"강남지사(서비스)",emp_id:"2020017",name:"홍성달"},{branch:"분당지사(서비스)",emp_id:"2023865",name:"이정호"},{branch:"수원지사(서비스)",emp_id:"2021340",name:"유진만"},{branch:"강원지사(서비스)",emp_id:"2022516",name:"엄주호"},{branch:"대구지사(서비스)",emp_id:"2023873",name:"이규호"},{branch:"울산지사(서비스)",emp_id:"2026252",name:"강무중"},{branch:"부산지사(서비스)",emp_id:"2022001",name:"김명환"},{branch:"경남지사(서비스)",emp_id:"2023849",name:"신성진"},{branch:"대전·충청지사(서비스)",emp_id:"2022010",name:"신하늘"},{branch:"광주지사(서비스)",emp_id:"2022486",name:"선동률"},{branch:"전주지사(서비스)",emp_id:"2007924",name:"손경식"},{branch:"제주지사(서비스)",emp_id:"2024683",name:"송진혁"}]},
+  {branch:"설치지사", members:[{branch:"강북·강원지사(설치)",emp_id:"2018632",name:"김연식"},{branch:"강남지사(설치)",emp_id:"3018202",name:"오세훈"},{branch:"인천지사(설치)",emp_id:"2019957",name:"이현용"},{branch:"중부지사(설치)",emp_id:"2012634",name:"강환웅"},{branch:"대구·울산지사(설치)",emp_id:"2020831",name:"손성욱"},{branch:"부산·경남지사(설치)",emp_id:"3016480",name:"정형교"},{branch:"대전지사(설치)",emp_id:"2028298",name:"임승원"},{branch:"광주·전주·제주지사(설치)",emp_id:"3012913",name:"정상기"}]}
 ];
 
 /* ── STATE ──────────────────────────────────────────── */
@@ -1026,6 +1027,7 @@ BRANCHES.forEach(function(b, i) {
     comments: 0,
     level: 1,
     leader: LEADERS[i % LEADERS.length],
+    leaderEmpId: LEADER_EMP_ID[b] || "",
     activities: MONTHS.map(function(m, mi) {
       return { month:"2026년 "+m+" 활동", desc:b+ACT_TMPL[mi], comments:[] };
     })
@@ -1293,11 +1295,43 @@ function openCentral() {
   var el = document.getElementById("memberList");
   el.innerHTML = "";
   MEMBERS_DATA.forEach(function(g) {
-    var html = "<div class='branch-group'><div class='branch-hdr'>"+g.branch+"</div><div class='m-grid'>";
+    var groupDiv = document.createElement("div");
+    groupDiv.className = "branch-group";
+    var hdr = document.createElement("div");
+    hdr.className = "branch-hdr";
+    hdr.textContent = g.branch;
+    groupDiv.appendChild(hdr);
+    var grid = document.createElement("div");
+    grid.className = "m-grid";
     g.members.forEach(function(m) {
-      html += "<div class='m-card'><div class='m-photo'>사진</div><div class='m-name'>"+m+"</div></div>";
+      var card = document.createElement("div");
+      card.className = "m-card";
+      // 사진 영역
+      var photoDiv = document.createElement("div");
+      photoDiv.className = "m-photo";
+      photoDiv.style.cssText = "overflow:hidden;background:#e0edf4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;";
+      photoDiv.textContent = "👤";
+      // Storage에서 사진 로드
+      var imgUrl = leaderImgUrl(m.emp_id);
+      var img = new Image();
+      img.onload = function() {
+        photoDiv.innerHTML = "<img src='" + imgUrl + "' style='width:100%;height:100%;object-fit:cover;border-radius:8px;'>";
+      };
+      img.src = imgUrl;
+      // 이름 + 지사명
+      var nameDiv = document.createElement("div");
+      nameDiv.className = "m-name";
+      nameDiv.textContent = m.name;
+      var branchDiv = document.createElement("div");
+      branchDiv.style.cssText = "font-size:10px;color:rgba(255,255,255,.7);margin-top:2px;";
+      branchDiv.textContent = m.branch;
+      card.appendChild(photoDiv);
+      card.appendChild(nameDiv);
+      card.appendChild(branchDiv);
+      grid.appendChild(card);
     });
-    el.innerHTML += html + "</div></div>";
+    groupDiv.appendChild(grid);
+    el.appendChild(groupDiv);
   });
   document.getElementById("cntModal").classList.add("on");
 }
@@ -1326,8 +1360,7 @@ function openVillage(branch) {
   lPane.id = "vp-leader";
   lPane.innerHTML = "<div style='display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 0'>"
     + "<div style='width:100%;background:#f5f9fb;border-radius:14px;padding:18px 16px;display:flex;gap:16px;align-items:center;margin-bottom:12px;border:1px solid #d0e4ee'>"
-    + "<div style='width:80px;height:80px;border-radius:50%;background:#e0edf4;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#7a9aaa;border:2px solid #b0cfe0;overflow:hidden'>"
-    + "<span style='font-size:28px'>👤</span></div>"
+    + "<div id='leader-photo-" + branch.replace(/[^a-zA-Z0-9]/g,'-') + "' style='width:80px;height:80px;border-radius:50%;background:#e0edf4;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:#7a9aaa;border:2px solid #b0cfe0;overflow:hidden'>👤</div>"
     + "<div>"
     + "<div style='font-size:11px;color:#00A651;font-weight:700;margin-bottom:3px'>" + branch + " 컬처리더</div>"
     + "<div style='font-size:20px;font-weight:900;color:#0C4DA2;margin-bottom:3px'>" + d.leader + "</div>"
@@ -1340,6 +1373,13 @@ function openVillage(branch) {
     + "<div style='background:rgba(255,255,255,.1);border-radius:11px;padding:13px 16px;font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;width:100%;text-align:center'>"
     + "안녕하세요! "+branch+" 컬처리더 "+d.leader+"입니다.<br>올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다!</div></div>";
   panesEl.appendChild(lPane);
+
+  // 컬처리더 사진 로드 (사번 필요 - branchData에서 가져옴)
+  var leaderEmpId = branchData[branch] ? branchData[branch].leaderEmpId : null;
+  if (leaderEmpId) {
+    var photoEl = document.getElementById("leader-photo-" + branch.replace(/[^a-zA-Z0-9]/g, "-"));
+    if (photoEl) imgWithFallback(leaderImgUrl(leaderEmpId), photoEl);
+  }
 
   // Monthly tabs
   d.activities.forEach(function(act, idx) {
@@ -1370,12 +1410,25 @@ function openVillage(branch) {
     pane.innerHTML = "<div class='act-card'>"
       + "<div class='act-month'>"+act.month+"</div>"
       + "<div class='act-desc'>"+act.desc+"</div>"
+      + "<div id='act-img-"+branch.replace(/[^a-zA-Z0-9]/g,'-')+"-"+idx+"' style='width:100%;margin:8px 0 4px;border-radius:10px;overflow:hidden;min-height:0'></div>"
       + "<div class='cmt-sec'>"
       + "<div class='cmt-cnt' id='cc-"+branch+"-"+idx+"'>댓글 "+act.comments.length+"개</div>"
       + "<div class='cmt-list' id='cl-"+branch+"-"+idx+"'>"+cmtHtml+"</div>"
       + inputHtml
       + "</div></div>";
     panesEl.appendChild(pane);
+
+    // 월별 활동 사진 로드
+    (function(b, m, i) {
+      var imgUrl = activityImgUrl(b, m);
+      var imgEl = document.getElementById("act-img-" + b.replace(/[^a-zA-Z0-9]/g,"-") + "-" + i);
+      if (!imgEl) return;
+      var img = new Image();
+      img.onload = function() {
+        imgEl.innerHTML = "<img src='" + imgUrl + "' style='width:100%;border-radius:10px;display:block;'>";
+      };
+      img.src = imgUrl;
+    })(branch, act.month, idx);
   });
 
   document.getElementById("vModal").classList.add("on");
@@ -1792,6 +1845,26 @@ window.addEventListener("DOMContentLoaded", function() {
 function displayName() {
   return (state.userTeam ? state.userTeam + "/" : "") + state.userName;
 }
+
+/* ── STORAGE 이미지 URL 헬퍼 ─────────────────────────── */
+var STORAGE_BASE = "https://rgdnkbzukfpxdrkvqhvg.supabase.co/storage/v1/object/public/game-images";
+var BRANCH_CODE = {"대구지사(영업)":"daegu-sales","부산지사(영업)":"busan-sales","울산지사(영업)":"ulsan-sales","경남지사(영업)":"gyeongnam-sales","대전·충청지사(영업)":"daejeon-sales","광주지사(영업)":"gwangju-sales","전주지사(영업)":"jeonju-sales","강북지사(서비스)":"gangbuk-service","강서지사(서비스)":"gangseo-service","인천지사(서비스)":"incheon-service","강남지사(서비스)":"gangnam-service","분당지사(서비스)":"bundang-service","수원지사(서비스)":"suwon-service","강원지사(서비스)":"gangwon-service","대구지사(서비스)":"daegu-service","울산지사(서비스)":"ulsan-service","부산지사(서비스)":"busan-service","경남지사(서비스)":"gyeongnam-service","대전·충청지사(서비스)":"daejeon-service","광주지사(서비스)":"gwangju-service","전주지사(서비스)":"jeonju-service","제주지사(서비스)":"jeju-service","강북·강원지사(설치)":"gangbuk-install","강남지사(설치)":"gangnam-install","인천지사(설치)":"incheon-install","중부지사(설치)":"jungbu-install","대구·울산지사(설치)":"daegu-install","부산·경남지사(설치)":"busan-install","대전지사(설치)":"daejeon-install","광주·전주·제주지사(설치)":"gwangju-install"};
+
+function leaderImgUrl(empId) {
+  return STORAGE_BASE + "/leaders/" + empId + ".jpg";
+}
+function activityImgUrl(branch, month) {
+  var code = BRANCH_CODE[branch] || "unknown";
+  var monthNum = String(MONTHS.indexOf(month) + 5).padStart(2, "0");
+  return STORAGE_BASE + "/activities/" + code + "_" + monthNum + ".jpg";
+}
+function imgWithFallback(url, fallbackEl) {
+  var img = new Image();
+  img.onload  = function() { fallbackEl.innerHTML = "<img src='" + url + "' style='width:100%;height:100%;object-fit:cover;border-radius:50%;'>" };
+  img.onerror = function() { /* 사진 없으면 기본 아이콘 유지 */ };
+  img.src = url;
+}
+
 /* ── LEVEL UP CELEBRATION ──────────────────────────────── */
 function showLevelUp(userName, branch, oldLv, newLv) {
   var popup = document.getElementById("lvPopup");
