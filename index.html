@@ -521,22 +521,6 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
   <p class="login-title">지사 컬처리더 마을에 오신 것을<br>환영합니다!</p>
   <div class="login-box">
     <div class="login-row">
-      <label>본부</label>
-      <select id="inp-dept">
-        <option value="">본부 선택</option>
-        <option>감사실</option>
-        <option>영업1본부</option>
-        <option>영업2본부</option>
-        <option>서비스본부</option>
-        <option>R&amp;D본부</option>
-        <option>SCM본부</option>
-        <option>디지털전략본부</option>
-        <option>경영전략본부</option>
-        <option>경영지원본부</option>
-        <option>기타조직</option>
-      </select>
-    </div>
-    <div class="login-row">
       <label>사번</label>
       <input type="text" id="inp-id" placeholder="사번 입력" maxlength="20">
     </div>
@@ -831,7 +815,7 @@ function validateUser(empId, name) {
       if (dbName && dbName !== name.trim()) {
         return { valid: false, reason: "사번과 이름이 일치하지 않습니다." };
       }
-      return { valid: true, dept: rows[0].dept || "" };
+      return { valid: true, dept: rows[0].dept || "", dbName: rows[0].name || name };
     })
     .catch(function(e) {
       console.error("사번 검증 실패:", e.message);
@@ -843,23 +827,37 @@ function validateUser(empId, name) {
 function loadOrCreateUser(empId, name, dept) {
   console.log("Supabase: 사용자 조회/생성 시작...", empId);
   return sbFetch("users?emp_id=eq." + encodeURIComponent(empId) + "&select=*")
-    .then(function(r){ return r.json(); })
+    .then(function(r) { return r.json(); })
     .then(function(rows) {
       if (rows && rows.length > 0) {
-        // 기존 사용자 - 다이아/룰렛 횟수 복원
-        state.diamonds       = rows[0].diamonds;
-        state.rouletteCount  = rows[0].roulette_count;
+        // 기존 사용자 - DB의 최신 dept로 state.userTeam 동기화
+        state.diamonds      = rows[0].diamonds;
+        state.rouletteCount = rows[0].roulette_count;
+        if (rows[0].dept) {
+          state.userTeam = rows[0].dept; // 항상 DB 본부 기준
+        }
+        // 본부가 바뀌었으면 DB 업데이트
+        if (rows[0].dept !== dept && dept) {
+          sbFetch("users?emp_id=eq." + encodeURIComponent(empId), "PATCH",
+            { dept: dept, updated_at: new Date().toISOString() })
+            .then(function() { state.userTeam = dept; })
+            .catch(function(e) { console.warn("본부 업데이트 실패:", e); });
+        }
         document.getElementById("diaCount").textContent = state.diamonds;
+        // HUD 이름 업데이트 (최신 본부 반영)
+        document.getElementById("hudName").innerHTML =
+          "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
+          + displayName() + "님</span>";
         return rows[0];
       } else {
         // 신규 사용자 생성
         return sbFetch("users", "POST", {
           emp_id: empId, name: name, dept: dept,
           diamonds: 0, roulette_count: 0
-        }).then(function(){ return null; });
+        }).then(function() { return null; });
       }
     })
-    .catch(function(e){ console.error("사용자 로드 실패:", e.message); });
+    .catch(function(e) { console.warn("사용자 로드 실패:", e.message); });
 }
 
 /* 댓글 저장 */
@@ -923,6 +921,14 @@ function loadMyRoulette() {
     "&select=result,created_at&order=created_at.desc"
   ).then(function(r){ return r.json(); })
   .catch(function(e){ console.warn("룰렛 내역 로드 실패:", e); return []; });
+}
+
+function loadMyDiamonds() {
+  return sbFetch(
+    "diamond_logs?emp_id=eq." + encodeURIComponent(state.userId) +
+    "&select=change_amount,reason,detail,created_at&order=created_at.desc"
+  ).then(function(r){ return r.json(); })
+  .catch(function(e){ console.warn("다이아 내역 로드 실패:", e); return []; });
 }
 
 /* 지사별 댓글 불러오기 (지사 모달용) */
@@ -1228,17 +1234,14 @@ function setupPinch() {
 /* ── LOGIN ──────────────────────────────────────────── */
 function doLogin() {
   var id   = document.getElementById("inp-id").value.trim();
-  var dept = document.getElementById("inp-dept") ? document.getElementById("inp-dept").value : "";
   var name = document.getElementById("inp-name").value.trim();
-  if (!dept) { showToast("본부를 선택해주세요"); return; }
   if (!id || !name) { showToast("사번과 이름을 입력해주세요"); return; }
 
-  // 버튼 비활성화
   var btn = document.getElementById("loginBtn");
   btn.disabled = true;
   btn.textContent = "확인 중...";
 
-  // Supabase 사번 검증
+  // Supabase: 사번+이름 검증 및 본부 자동 조회
   validateUser(id, name).then(function(result) {
     if (!result.valid) {
       showToast(result.reason);
@@ -1247,18 +1250,21 @@ function doLogin() {
       return;
     }
 
+    // DB에서 가져온 본부+이름 사용
     state.userId   = id;
-    state.userTeam = dept;
-    state.userName = name;
+    state.userName = result.dbName || name;
+    state.userTeam = result.dept || "";
 
     document.getElementById("loginScreen").classList.remove("active");
     document.getElementById("worldScreen").classList.add("active");
-    document.getElementById("hudName").innerHTML = "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>" + (dept||"") + "/" + name + "님</span>";
+    document.getElementById("hudName").innerHTML =
+      "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
+      + displayName() + "님</span>";
     document.getElementById("diaCount").textContent = state.diamonds;
 
     loadRouletteSettings();
     loadBranchStatus().then(function() { initMap(); }).catch(function() { initMap(); });
-    loadOrCreateUser(id, name, dept);
+    loadOrCreateUser(id, state.userName, state.userTeam);
     setupDrag();
     setupPinch();
   });
@@ -1384,7 +1390,7 @@ function submitComment(branch, actIdx) {
   }
 
   var d = branchData[branch];
-  d.activities[actIdx].comments.push({ author:state.userName, text:text });
+  d.activities[actIdx].comments.push({ author:displayName(), text:text });
   d.comments++;
   var newLv = Math.min(5, Math.floor(d.comments/2)+1);
   if (newLv > d.level) {
@@ -1724,6 +1730,11 @@ window.addEventListener("DOMContentLoaded", function() {
 
 
 
+
+/* 이름 표시 헬퍼: 본부/이름 형식 */
+function displayName() {
+  return (state.userTeam ? state.userTeam + "/" : "") + state.userName;
+}
 /* ── LEVEL UP CELEBRATION ──────────────────────────────── */
 function showLevelUp(userName, branch, oldLv, newLv) {
   var popup = document.getElementById("lvPopup");
