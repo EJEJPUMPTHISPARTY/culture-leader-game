@@ -552,7 +552,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
   </div>
   <div class="bottom-row">
     <button class="b-btn white" id="btnRanking">랭킹</button>
-    <button class="b-btn white" id="btnMyStatus">내현황</button>
+    <button class="b-btn white" id="btnMyStatus">마이페이지</button>
     <button class="b-btn white" id="btnRlt">룰렛</button>
   </div>
 </div>
@@ -577,7 +577,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <div class="overlay" id="statusModal">
   <div class="modal" style="width:480px">
     <div class="m-inner">
-      <div class="m-title">내 현황</div>
+      <div class="m-title">마이페이지</div>
       <div class="status-summary" id="statusSummary"></div>
       <div class="status-log-title">활동 내역</div>
       <div class="status-log" id="statusLog"></div>
@@ -946,6 +946,14 @@ function loadMyComments() {
     "&select=branch,month,content,created_at&order=created_at.desc"
   ).then(function(r){ return r.json(); })
   .catch(function(e){ console.warn("댓글 내역 로드 실패:", e); return []; });
+}
+
+function loadMyRoulette() {
+  return sbFetch(
+    "roulette_logs?emp_id=eq." + encodeURIComponent(state.userId) +
+    "&select=result,created_at&order=created_at.desc"
+  ).then(function(r){ return r.json(); })
+  .catch(function(e){ console.warn("룰렛 내역 로드 실패:", e); return []; });
 }
 
 /* 지사별 댓글 불러오기 (지사 모달용) */
@@ -2006,18 +2014,18 @@ function openMyStatus() {
       } else if (entry.type === "comment") {
         div.className = "status-entry comment";
         div.innerHTML = "<div class='status-entry-date'>"+entry.date+" "+entry.time+"</div>"
-          + "<div class='status-entry-text'>"+entry.branch+" "+entry.month+" 게시글에 댓글 등록 · 다이아 <strong>+1</strong>개</div>"
+          + "<div class='status-entry-text'>💬 "+entry.branch+" "+entry.month+" 게시글에 댓글 등록 · 다이아 <strong>+1</strong>개</div>"
           + "<div style='font-size:11px;color:#5a8090;margin-top:2px'>"+entry.text+"</div>";
       } else if (entry.type === "spend") {
         div.className = "status-entry spend";
         div.innerHTML = "<div class='status-entry-date'>"+entry.date+" "+entry.time+"</div>"
-          + "<div class='status-entry-text'>룰렛 응모 · 다이아 <strong>-1</strong>개 소모</div>";
+          + "<div class='status-entry-text'>🎰 룰렛 응모 · 다이아 <strong>-1</strong>개 소모</div>";
       } else if (entry.type === "roulette") {
         var isWin = entry.result !== "다음기회에";
         div.className = "status-entry " + (isWin ? "win" : "roulette");
         var diaText = isWin ? " · 다이아 <strong>"+entry.diaChange+"</strong>개 획득" : "";
         div.innerHTML = "<div class='status-entry-date'>"+entry.date+" "+entry.time+"</div>"
-          + "<div class='status-entry-text'>룰렛 결과: <strong>"+entry.result+"</strong>"+diaText+"</div>";
+          + "<div class='status-entry-text'>"+( entry.result !== '다음기회에' ? '🎉' : '😢')+" 룰렛 결과: <strong>"+entry.result+"</strong>"+diaText+"</div>";
       }
       logEl.appendChild(div);
     });
