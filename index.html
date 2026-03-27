@@ -303,8 +303,9 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .cmt-sec{border-top:1px solid #d0e4ee;padding-top:9px;}
 .cmt-cnt{font-size:11px;color:#7a9aaa;margin-bottom:6px;}
 .cmt-list{margin-bottom:7px;max-height:120px;overflow-y:auto;}
-.cmt-item{font-size:12px;color:#2a4050;padding:3px 0;border-bottom:1px solid #e0edf4;display:flex;gap:7px;}
-.cmt-author{font-weight:700;color:#00A651;flex-shrink:0;}
+.cmt-item{font-size:12px;color:#2a4050;padding:5px 0;border-bottom:1px solid #e0edf4;display:flex;flex-direction:column;gap:2px;}
+.cmt-author{font-weight:700;color:#00A651;}
+.cmt-text{color:#2a4050;line-height:1.4;word-break:break-all;}
 .cmt-row{display:flex;gap:6px;width:100%;box-sizing:border-box;}
 .cmt-inp{
   flex:1;min-width:0;background:#edf4f8;border:1px solid #b0cfe0;
@@ -933,11 +934,28 @@ function loadMyDiamonds() {
 
 /* 지사별 댓글 불러오기 (지사 모달용) */
 function loadBranchComments(branch) {
-  return sbFetch(
-    "comments?branch=eq." + encodeURIComponent(branch) +
-    "&select=name,month,content,created_at&order=created_at.asc"
-  ).then(function(r){ return r.json(); })
-  .catch(function(e){ console.warn("지사 댓글 로드 실패:", e); return []; });
+  // comments + users 테이블 함께 조회하여 본부/이름 표시
+  return Promise.all([
+    sbFetch("comments?branch=eq." + encodeURIComponent(branch) +
+      "&select=emp_id,name,month,content,created_at&order=created_at.asc")
+      .then(function(r){ return r.json(); }),
+    sbFetch("users?select=emp_id,name,dept")
+      .then(function(r){ return r.json(); })
+  ]).then(function(results) {
+    var comments = results[0] || [];
+    var users    = results[1] || [];
+    var userMap  = {};
+    users.forEach(function(u) {
+      userMap[u.emp_id] = (u.dept ? u.dept + "/" : "") + u.name;
+    });
+    return comments.map(function(row) {
+      return {
+        author: userMap[row.emp_id] || row.name,
+        month:  row.month,
+        text:   row.content
+      };
+    });
+  }).catch(function(e){ console.warn("지사 댓글 로드 실패:", e.message); return []; });
 }
 /* ══════════════════════════════════════════════════════ */
 
@@ -1339,7 +1357,7 @@ function openVillage(branch) {
     pane.id = "vp-"+idx;
 
     var cmtHtml = act.comments.map(function(c){
-      return "<div class='cmt-item'><span class='cmt-author'>"+c.author+"</span><span>"+c.text+"</span></div>";
+      return "<div class='cmt-item'><span class='cmt-author'>"+c.author+"</span><span class='cmt-text'>"+c.text+"</span></div>";
     }).join("");
 
     var inputHtml = already
@@ -1412,7 +1430,7 @@ function submitComment(branch, actIdx) {
   updateBranchStatus(branch, d.comments, d.level);
 
   var cl = document.getElementById("cl-"+branch+"-"+actIdx);
-  if (cl) cl.insertAdjacentHTML("beforeend", "<div class='cmt-item'><span class='cmt-author'>"+state.userName+"</span><span>"+text+"</span></div>");
+  if (cl) cl.insertAdjacentHTML("beforeend", "<div class='cmt-item'><span class='cmt-author'>"+displayName()+"</span><span class='cmt-text'>"+text+"</span></div>");
   var cc = document.getElementById("cc-"+branch+"-"+actIdx);
   if (cc) cc.textContent = "댓글 "+d.activities[actIdx].comments.length+"개";
   document.getElementById("vLv").textContent = "Lv."+d.level;
