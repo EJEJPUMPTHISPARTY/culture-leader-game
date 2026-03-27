@@ -427,6 +427,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 }
 .rank-tab-btn.on{background:#0C4DA2;color:#fff;border-color:#0C4DA2;}
 .rank-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto;}
+.rank-item.rank-mine{background:#f0f5ff;border-color:#b0c8f0;}
 .rank-item{
   display:flex;align-items:center;gap:10px;
   padding:10px 12px;border-radius:10px;background:#f5f9fb;border:1px solid #e0edf4;
@@ -1934,23 +1935,44 @@ function renderRanking() {
       });
     }
   } else {
-    // Personal ranking: count from state.comments (current user only for now)
-    var myCount = state.comments.length;
-    if (myCount === 0) {
-      list.innerHTML = "<div style='text-align:center;padding:32px 0;color:#aab8cc;font-size:14px'>랭킹 데이터가 없습니다</div>";
-    } else {
-      var rows = [{ name: (state.userTeam||"") + "/" + state.userName, count: myCount }];
-      rows.sort(function(a,b){ return b.count - a.count; });
-      rows.forEach(function(item, i) {
-        var numCls = i===0?"gold":i===1?"silver":i===2?"bronze":"normal";
-        var div = document.createElement("div");
-        div.className = "rank-item";
-        div.innerHTML = "<div class='rank-num "+numCls+"'>"+(i+1)+"</div>"
-          + "<div class='rank-name'>"+item.name+"</div>"
-          + "<div class='rank-val'>"+item.count+"개</div>";
-        list.appendChild(div);
+    // 개인 랭킹: Supabase에서 전체 사용자 댓글 수 집계
+    list.innerHTML = "<div style='text-align:center;padding:20px;color:#aab8cc;font-size:13px'>불러오는 중...</div>";
+    el.appendChild(list);
+    sbFetch("comments?select=emp_id,name&order=emp_id.asc")
+      .then(function(r){ return r.json(); })
+      .then(function(rows) {
+        // emp_id별 댓글 수 집계
+        var countMap = {};
+        var nameMap  = {};
+        rows.forEach(function(row) {
+          countMap[row.emp_id] = (countMap[row.emp_id] || 0) + 1;
+          nameMap[row.emp_id]  = row.name;
+        });
+        var sorted = Object.keys(countMap).map(function(id) {
+          return { name: nameMap[id], count: countMap[id], isMine: id === state.userId };
+        }).sort(function(a,b){ return b.count - a.count; });
+
+        list.innerHTML = "";
+        if (sorted.length === 0) {
+          list.innerHTML = "<div style='text-align:center;padding:32px 0;color:#aab8cc;font-size:14px'>랭킹 데이터가 없습니다</div>";
+          return;
+        }
+        var rank = 0; var prevCount = -1;
+        sorted.forEach(function(item, i) {
+          if (item.count !== prevCount) { rank = i + 1; prevCount = item.count; }
+          var numCls = rank===1?"gold":rank===2?"silver":rank===3?"bronze":"normal";
+          var div = document.createElement("div");
+          div.className = "rank-item" + (item.isMine ? " rank-mine" : "");
+          div.innerHTML = "<div class='rank-num "+numCls+"'>"+rank+"</div>"
+            + "<div class='rank-name'>"+item.name+(item.isMine?" <span style='color:#0C4DA2;font-size:11px'>(나)</span>":"")+"</div>"
+            + "<div class='rank-val'>"+item.count+"개</div>";
+          list.appendChild(div);
+        });
+      })
+      .catch(function() {
+        list.innerHTML = "<div style='text-align:center;padding:32px 0;color:#aab8cc;font-size:14px'>랭킹 데이터가 없습니다</div>";
       });
-    }
+    return; // 비동기라 아래 el.appendChild는 위에서 이미 처리됨
   }
   el.appendChild(list);
 }
@@ -1963,9 +1985,11 @@ function openMyStatus() {
     return acc + (w==="다이아 10개"?10:w==="다이아 5개"?5:0);
   }, 0);
   document.getElementById("statusSummary").innerHTML =
-    "<div class='status-card'><div class='status-card-val'>"+state.comments.length+"</div><div class='status-card-lbl'>총 댓글 수</div></div>"
-    + "<div class='status-card'><div class='status-card-val'>"+state.diamonds+"</div><div class='status-card-lbl'>보유 다이아 💎</div></div>"
-    + "<div class='status-card'><div class='status-card-val'>"+state.rouletteCount+"</div><div class='status-card-lbl'>룰렛 응모</div></div>";
+      "<div class='status-card'><div class='status-card-val'>" + dbComments.length + "</div><div class='status-card-lbl'>총 댓글 수</div></div>"
+      + "<div class='status-card'><div class='status-card-val'>" + state.diamonds + "</div><div class='status-card-lbl'>보유 다이아 💎</div></div>"
+      + "<div class='status-card'><div class='status-card-val'>" + dbRoulettes.length + "</div><div class='status-card-lbl'>룰렛 응모</div></div>";
+    // 브라우저 메모리도 동기화
+    state.rouletteCount = dbRoulettes.length;
 
   // Activity log
   var logEl = document.getElementById("statusLog");
