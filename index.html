@@ -1690,7 +1690,18 @@ function spinRoulette() {
           // Supabase 업데이트
           sbFetch("roulette_pool?id=eq." + ROULETTE_POOL[pi].id, "PATCH",
             { remaining: ROULETTE_POOL[pi].remaining })
-            .catch(function(e) { console.warn("풀 업데이트 실패:", e.message); });
+            .then(function(resp) {
+              // DB 업데이트 성공 확인 (204여야 함)
+              if (resp && resp.status === 400) {
+                // 제약조건 위반 (remaining 음수) → 로컬도 되돌리고 다른 아이템 시도
+                ROULETTE_POOL[pi].remaining += 1; // 되돌리기
+                console.warn("remaining 제약 위반, 다른 아이템으로 재시도");
+              }
+            })
+            .catch(function(e) { 
+              ROULETTE_POOL[pi].remaining += 1; // 실패 시 되돌리기
+              console.warn("풀 업데이트 실패:", e.message); 
+            });
           break;
         }
       }
