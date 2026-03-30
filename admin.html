@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>컬처리더 시티 | 활동 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0B4DA2;
+  --blue-dk: #083a7a;
+  --green: #00A652;
+  --yellow: #FBB812;
+  --dark: #1a2a35;
+  --gray: #f0f4f8;
+  --border: #d0dce6;
+  --text: #2a4050;
+  --sub: #7a9aaa;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+body{
+  font-family:'Noto Sans KR', sans-serif;
+  background:#f5f8fb;
+  color:var(--dark);
+  min-height:100vh;
+}
+
+/* ── HEADER ── */
+.header{
+  background:var(--blue);
+  padding:0 32px;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+}
+.header-logo{
+  font-size:16px;font-weight:700;color:#fff;
+  display:flex;align-items:center;gap:10px;
+}
+.header-logo span{
+  background:var(--yellow);color:var(--dark);
+  font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:20px;
+}
+.header-user{
+  font-size:13px;color:rgba(255,255,255,.8);
+  display:flex;align-items:center;gap:12px;
+}
+.logout-btn{
+  background:rgba(255,255,255,.15);color:#fff;
+  border:1px solid rgba(255,255,255,.3);
+  font-size:12px;font-weight:600;
+  padding:5px 14px;border-radius:6px;
+  cursor:pointer;font-family:inherit;
+  transition:background .15s;
+}
+.logout-btn:hover{ background:rgba(255,255,255,.25); }
+
+/* ── LOGIN ── */
+#loginWrap{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg, #0B4DA2 0%, #083a7a 50%, #00A652 100%);
+}
+.login-card{
+  background:#fff;border-radius:20px;
+  padding:40px 36px;
+  width:360px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+}
+.login-title{
+  font-size:22px;font-weight:900;color:var(--blue);
+  margin-bottom:4px;
+}
+.login-sub{
+  font-size:13px;color:var(--sub);
+  margin-bottom:28px;
+}
+.form-group{ margin-bottom:14px; }
+.form-label{
+  font-size:12px;font-weight:700;color:var(--text);
+  margin-bottom:6px;display:block;
+}
+.form-input{
+  width:100%;height:46px;
+  border:1.5px solid var(--border);
+  border-radius:8px;padding:0 14px;
+  font-size:15px;font-family:inherit;
+  outline:none;color:var(--dark);
+  background:#f9fbfd;
+  transition:border-color .15s;
+}
+.form-input:focus{ border-color:var(--blue);background:#fff; }
+.form-input::placeholder{ color:#b0c4d0; }
+.login-submit{
+  width:100%;height:50px;margin-top:8px;
+  background:var(--blue);color:#fff;
+  font-size:16px;font-weight:700;
+  border:none;border-radius:10px;
+  cursor:pointer;font-family:inherit;
+  transition:background .15s;
+}
+.login-submit:hover{ background:var(--blue-dk); }
+.login-submit:disabled{ opacity:.6;cursor:not-allowed; }
+.login-error{
+  background:#fff0f0;border:1px solid #ffd0d0;
+  color:#c44;font-size:13px;
+  padding:10px 14px;border-radius:8px;
+  margin-top:10px;display:none;
+}
+
+/* ── MAIN ── */
+#mainWrap{ display:none; }
+.container{ max-width:800px;margin:0 auto;padding:32px 20px; }
+
+/* ── CARD ── */
+.card{
+  background:#fff;border-radius:16px;
+  padding:28px;
+  box-shadow:0 2px 16px rgba(0,0,0,.06);
+  border:1px solid rgba(0,0,0,.04);
+  margin-bottom:20px;
+}
+.card-title{
+  font-size:16px;font-weight:700;color:var(--dark);
+  margin-bottom:20px;
+  padding-bottom:14px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--blue);display:inline-block;
+}
+
+/* ── SELECT ROW ── */
+.select-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+  margin-bottom:20px;
+}
+.form-select{
+  width:100%;height:46px;
+  border:1.5px solid var(--border);
+  border-radius:8px;padding:0 14px;
+  font-size:14px;font-family:inherit;
+  outline:none;color:var(--dark);
+  background:#f9fbfd url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237a9aaa' d='M6 8L0 0h12z'/%3E%3C/svg%3E") no-repeat right 14px center;
+  -webkit-appearance:none;appearance:none;
+  cursor:pointer;
+  transition:border-color .15s;
+}
+.form-select:focus{ border-color:var(--blue);background-color:#fff; }
+
+/* ── TEXTAREA ── */
+.form-textarea{
+  width:100%;min-height:140px;
+  border:1.5px solid var(--border);
+  border-radius:8px;padding:12px 14px;
+  font-size:14px;font-family:inherit;
+  outline:none;color:var(--dark);
+  background:#f9fbfd;
+  resize:vertical;line-height:1.7;
+  transition:border-color .15s;
+}
+.form-textarea:focus{ border-color:var(--blue);background:#fff; }
+.form-textarea::placeholder{ color:#b0c4d0; }
+.char-count{
+  font-size:11px;color:var(--sub);
+  text-align:right;margin-top:4px;
+}
+
+/* ── 사진 업로드 ── */
+.photo-upload-area{
+  border:2px dashed var(--border);
+  border-radius:10px;padding:24px;
+  text-align:center;cursor:pointer;
+  transition:all .2s;
+  background:#f9fbfd;
+  margin-bottom:6px;
+}
+.photo-upload-area:hover{
+  border-color:var(--blue);background:#f0f5ff;
+}
+.photo-upload-area.has-file{
+  border-color:var(--green);background:#f0fff6;
+}
+.upload-icon{ font-size:32px;margin-bottom:8px; }
+.upload-text{ font-size:13px;color:var(--sub);line-height:1.6; }
+.upload-text strong{ color:var(--blue); }
+#photoInput{ display:none; }
+.photo-preview{
+  width:100%;max-height:200px;
+  object-fit:contain;border-radius:8px;
+  display:none;
+}
+.photo-info{
+  font-size:11px;color:var(--sub);
+  margin-top:6px;
+}
+
+/* ── CURRENT DATA ── */
+.current-box{
+  background:var(--gray);border-radius:10px;
+  padding:14px 16px;margin-bottom:16px;
+  display:none;
+  max-height:400px;overflow-y:auto;
+}
+.current-label{
+  font-size:11px;font-weight:700;color:var(--sub);
+  margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;
+}
+.current-text{
+  font-size:13px;color:var(--text);line-height:1.7;
+  white-space:pre-line;
+}
+.current-photo{
+  width:100%;height:auto;object-fit:contain;
+  border-radius:8px;margin-top:8px;display:none;
+}
+
+/* ── BUTTONS ── */
+.btn-row{
+  display:flex;gap:10px;justify-content:flex-end;
+  margin-top:20px;
+}
+.btn{
+  height:46px;padding:0 24px;
+  border-radius:8px;border:none;
+  font-size:14px;font-weight:700;
+  cursor:pointer;font-family:inherit;
+  transition:all .15s;
+  display:flex;align-items:center;gap:6px;
+}
+.btn-primary{
+  background:var(--blue);color:#fff;
+}
+.btn-primary:hover{ background:var(--blue-dk); }
+.btn-primary:disabled{ opacity:.5;cursor:not-allowed; }
+.btn-secondary{
+  background:var(--gray);color:var(--text);
+  border:1px solid var(--border);
+}
+.btn-secondary:hover{ background:#e4eaf0; }
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:30px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:#1a2a35;color:#fff;
+  font-size:14px;font-weight:600;
+  padding:12px 24px;border-radius:12px;
+  opacity:0;transition:all .3s;pointer-events:none;
+  z-index:999;white-space:nowrap;
+}
+.toast.show{ opacity:1;transform:translateX(-50%) translateY(0); }
+.toast.success{ background:#00A652; }
+.toast.error{ background:#e53935; }
+
+/* ── PROGRESS ── */
+.progress-bar{
+  height:4px;background:var(--border);
+  border-radius:2px;margin-top:10px;
+  overflow:hidden;display:none;
+}
+.progress-fill{
+  height:100%;background:var(--blue);
+  border-radius:2px;width:0%;
+  transition:width .3s;
+}
+
+/* ── ADMIN BADGE ── */
+.admin-badge{
+  background:var(--yellow);color:var(--dark);
+  font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:4px;
+}
+.leader-badge{
+  background:var(--green);color:#fff;
+  font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:4px;
+}
+
+/* ── INFO BOX ── */
+.info-box{
+  background:#f0f5ff;border:1px solid #c8d8f8;
+  border-radius:8px;padding:12px 14px;
+  font-size:13px;color:var(--blue);
+  margin-bottom:16px;line-height:1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="login-card">
+    <div class="login-title">🏙️ 컬처리더 시티</div>
+    <div class="login-sub">활동 관리 페이지 · 컬처리더 전용</div>
+    <div class="form-group">
+      <label class="form-label">사번</label>
+      <input class="form-input" id="loginId" placeholder="사번을 입력하세요" maxlength="20">
+    </div>
+    <div class="form-group">
+      <label class="form-label">성명</label>
+      <input class="form-input" id="loginName" placeholder="성명을 입력하세요" maxlength="10">
+    </div>
+    <button class="login-submit" id="loginBtn" onclick="doLogin()">로그인</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="mainWrap">
+  <div class="header">
+    <div class="header-logo">
+      🏙️ 컬처리더 시티 <span>활동 관리</span>
+    </div>
+    <div class="header-user">
+      <span id="headerName"></span>
+      <span id="headerBadge"></span>
+      <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- 활동 등록/수정 카드 -->
+    <div class="card">
+      <div class="card-title">
+        <span class="dot"></span>
+        월별 활동 등록 / 수정
+      </div>
+
+      <div class="info-box" id="infoBox"></div>
+
+      <div class="select-row" style="grid-template-columns:1fr 1fr 1fr;">
+        <div>
+          <label class="form-label">지사 구분</label>
+          <select class="form-select" id="selType" onchange="onTypeChange()">
+            <option value="">-- 구분 선택 --</option>
+            <option value="영업">영업지사</option>
+            <option value="서비스">서비스지사</option>
+            <option value="설치">설치지사</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">지사 선택</label>
+          <select class="form-select" id="selBranch" onchange="onSelectChange()" disabled>
+            <option value="">-- 지사를 선택하세요 --</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">활동 월 선택</label>
+          <select class="form-select" id="selMonth" onchange="onSelectChange()" disabled>
+            <option value="">-- 월을 선택하세요 --</option>
+            <option value="5월">5월</option>
+            <option value="6월">6월</option>
+            <option value="7월">7월</option>
+            <option value="8월">8월</option>
+            <option value="9월">9월</option>
+            <option value="10월">10월</option>
+            <option value="11월">11월</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 현재 등록된 내용 미리보기 -->
+      <div class="current-box" id="currentBox">
+        <div class="current-label">현재 등록된 내용</div>
+        <div class="current-text" id="currentText"></div>
+        <img class="current-photo" id="currentPhoto" alt="현재 사진">
+      </div>
+
+      <!-- 활동 내용 -->
+      <div class="form-group">
+        <label class="form-label">활동 내용</label>
+        <textarea class="form-textarea" id="descInput"
+          placeholder="이달의 활동 내용을 입력하세요..."
+          oninput="updateCharCount()" maxlength="2000"></textarea>
+        <div class="char-count"><span id="charCount">0</span> / 2000자</div>
+      </div>
+
+      <!-- 사진 업로드 -->
+      <div class="form-group">
+        <label class="form-label">활동 사진 <span style="color:var(--sub);font-weight:400">(선택 · 최대 2MB, 자동 압축)</span></label>
+        <div class="photo-upload-area" id="uploadArea" onclick="document.getElementById('photoInput').click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-text">
+            클릭하거나 사진을 드래그하세요<br>
+            <strong>JPG, PNG, WEBP</strong> · 자동으로 압축·최적화됩니다
+          </div>
+          <img class="photo-preview" id="photoPreview" alt="미리보기">
+        </div>
+        <div class="photo-info" id="photoInfo"></div>
+        <div class="progress-bar" id="progressBar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <input type="file" id="photoInput" accept="image/*" onchange="onPhotoSelect(event)">
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="resetForm()">초기화</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="saveActivity()" disabled>
+          💾 저장하기
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ── CONFIG ── */
+var SB_URL = "https://rgdnkbzukfpxdrkvqhvg.supabase.co";
+var SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnZG5rYnp1a2ZweGRya3ZxaHZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1ODY0MjcsImV4cCI6MjA5MDE2MjQyN30.izYx5RYcvfMpYVHytw4OYyfpl755dTqtmfyGIZyNg-Q";
+var STORAGE_BASE = "https://rgdnkbzukfpxdrkvqhvg.supabase.co/storage/v1/object/public/game-images";
+
+// 관리자 사번 목록 (여기에 본부 사번 추가)
+var ADMIN_IDS = ["2021269"];  // 관리자: 전은지
+
+var BRANCHES = [
+  "대구지사(영업)","부산지사(영업)","대전·충청지사(영업)",
+  "광주지사(영업)","강서지사(서비스)","전주지사(영업)",
+  "강남지사(서비스)","분당지사(서비스)","수원지사(서비스)","강원지사(서비스)","대구지사(서비스)",
+  "울산지사(서비스)","부산지사(서비스)","경남지사(서비스)","대전·충청지사(서비스)","광주지사(서비스)",
+  "전주지사(서비스)","제주지사(서비스)","강북·강원지사(설치)","강남지사(설치)","인천지사(설치)",
+  "중부지사(설치)","대구·울산지사(설치)","강북지사(서비스)","부산·경남지사(설치)","대전지사(설치)","광주·전주·제주지사(설치)",
+  "울산지사(영업)","경남지사(영업)","인천지사(서비스)"
+];
+
+var BRANCH_CODE = {
+  "대구지사(영업)":"daegu-sales","부산지사(영업)":"busan-sales","울산지사(영업)":"ulsan-sales",
+  "경남지사(영업)":"gyeongnam-sales","대전·충청지사(영업)":"daejeon-sales","광주지사(영업)":"gwangju-sales",
+  "전주지사(영업)":"jeonju-sales","강북지사(서비스)":"gangbuk-service","강서지사(서비스)":"gangseo-service",
+  "인천지사(서비스)":"incheon-service","강남지사(서비스)":"gangnam-service","분당지사(서비스)":"bundang-service",
+  "수원지사(서비스)":"suwon-service","강원지사(서비스)":"gangwon-service","대구지사(서비스)":"daegu-service",
+  "울산지사(서비스)":"ulsan-service","부산지사(서비스)":"busan-service","경남지사(서비스)":"gyeongnam-service",
+  "대전·충청지사(서비스)":"daejeon-service","광주지사(서비스)":"gwangju-service","전주지사(서비스)":"jeonju-service",
+  "제주지사(서비스)":"jeju-service","강북·강원지사(설치)":"gangbuk-install","강남지사(설치)":"gangnam-install",
+  "인천지사(설치)":"incheon-install","중부지사(설치)":"jungbu-install","대구·울산지사(설치)":"daegu-install",
+  "부산·경남지사(설치)":"busan-install","대전지사(설치)":"daejeon-install","광주·전주·제주지사(설치)":"gwangju-install"
+};
+
+var MONTHS_NUM = {"5월":"05","6월":"06","7월":"07","8월":"08","9월":"09","10월":"10","11월":"11"};
+
+/* ── STATE ── */
+var currentUser = null;  // { empId, name, dept, isAdmin, myBranch }
+var selectedFile = null;
+
+/* ── SUPABASE ── */
+function sbFetch(path, method, body) {
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open(method || "GET", SB_URL + "/rest/v1/" + path, true);
+    xhr.setRequestHeader("apikey", SB_KEY);
+    xhr.setRequestHeader("Authorization", "Bearer " + SB_KEY);
+    if (method === "POST" || method === "PATCH") {
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Prefer", "return=minimal");
+    }
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve({ ok:true, json: function(){ return Promise.resolve(JSON.parse(xhr.responseText || "[]")); } });
+      } else {
+        reject(new Error("HTTP " + xhr.status));
+      }
+    };
+    xhr.onerror = function(){ reject(new Error("네트워크 오류")); };
+    xhr.timeout = 10000;
+    xhr.ontimeout = function(){ reject(new Error("시간 초과")); };
+    xhr.send(body ? JSON.stringify(body) : null);
+  });
+}
+
+function sbUpload(path, file, onProgress) {
+  return new Promise(function(resolve, reject) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", SB_URL + "/storage/v1/object/" + path, true);
+    xhr.setRequestHeader("apikey", SB_KEY);
+    xhr.setRequestHeader("Authorization", "Bearer " + SB_KEY);
+    xhr.setRequestHeader("x-upsert", "true");  // 덮어쓰기
+
+    if (onProgress) {
+      xhr.upload.onprogress = function(e) {
+        if (e.lengthComputable) onProgress(Math.round(e.loaded/e.total*100));
+      };
+    }
+    xhr.onload = function() {
+      if (xhr.status >= 200 && xhr.status < 300) resolve();
+      else reject(new Error("업로드 실패: " + xhr.status));
+    };
+    xhr.onerror = function(){ reject(new Error("네트워크 오류")); };
+    xhr.timeout = 30000;
+    xhr.ontimeout = function(){ reject(new Error("시간 초과")); };
+    xhr.send(file);
+  });
+}
+
+/* ── LOGIN ── */
+function doLogin() {
+  var id = document.getElementById("loginId").value.trim();
+  var name = document.getElementById("loginName").value.trim();
+  if (!id || !name) { showLoginError("사번과 성명을 입력해주세요."); return; }
+
+  var btn = document.getElementById("loginBtn");
+  btn.disabled = true; btn.textContent = "확인 중...";
+
+  var isAdmin = ADMIN_IDS.indexOf(id) >= 0;
+
+  // 관리자는 allowed_users 검증 없이 바로 진입
+  if (isAdmin) {
+    currentUser = { empId: id, name: name, dept: "", isAdmin: true, myBranch: null };
+    btn.disabled = false; btn.textContent = "로그인";
+    enterMain();
+    return;
+  }
+
+  // 컬처리더는 allowed_users 테이블에서 검증
+  sbFetch("allowed_users?emp_id=eq." + encodeURIComponent(id) + "&select=emp_id,name,dept")
+    .then(function(r){ return r.json(); })
+    .then(function(rows) {
+      if (!rows || rows.length === 0) {
+        showLoginError("등록되지 않은 사번입니다.");
+        btn.disabled = false; btn.textContent = "로그인";
+        return;
+      }
+      var dbName = rows[0].name ? rows[0].name.trim() : "";
+      if (dbName && dbName !== name.trim()) {
+        showLoginError("사번과 성명이 일치하지 않습니다.");
+        btn.disabled = false; btn.textContent = "로그인";
+        return;
+      }
+
+      // 본인 지사 찾기 (allowed_users의 dept가 지사명과 일치하는지)
+      var dept = rows[0].dept || "";
+      var myBranch = BRANCHES.indexOf(dept) >= 0 ? dept : null;
+
+      currentUser = { empId: id, name: rows[0].name || name, dept: dept, isAdmin: false, myBranch: myBranch };
+      btn.disabled = false; btn.textContent = "로그인";
+      enterMain();
+    })
+    .catch(function() {
+      showLoginError("로그인 중 오류가 발생했습니다.");
+      btn.disabled = false; btn.textContent = "로그인";
+    });
+}
+
+function showLoginError(msg) {
+  var el = document.getElementById("loginError");
+  el.textContent = msg; el.style.display = "block";
+}
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById("mainWrap").style.display = "none";
+  document.getElementById("loginWrap").style.display = "flex";
+  document.getElementById("loginId").value = "";
+  document.getElementById("loginName").value = "";
+  document.getElementById("loginError").style.display = "none";
+  document.getElementById("loginBtn").disabled = false;
+  document.getElementById("loginBtn").textContent = "로그인";
+  resetForm();
+}
+
+function enterMain() {
+  document.getElementById("loginWrap").style.display = "none";
+  document.getElementById("mainWrap").style.display = "block";
+
+  // 헤더 이름 + 뱃지
+  document.getElementById("headerName").textContent = currentUser.name + "님";
+  var badge = document.getElementById("headerBadge");
+  if (currentUser.isAdmin) {
+    badge.innerHTML = "<span class='admin-badge'>관리자</span>";
+  } else {
+    badge.innerHTML = "<span class='leader-badge'>컬처리더</span>";
+  }
+
+  // 안내 문구
+  var info = document.getElementById("infoBox");
+  if (currentUser.isAdmin) {
+    info.innerHTML = "👑 <strong>관리자 계정</strong>으로 로그인했습니다. 모든 지사의 활동 내용을 등록·수정할 수 있습니다.";
+  } else {
+    info.innerHTML = "✏️ <strong>컬처리더</strong>로 로그인했습니다. 본인이 리더인 지사의 활동 내용을 등록·수정할 수 있습니다.";
+  }
+
+  // 컬처리더는 본인 지사 구분 자동 선택
+  if (!currentUser.isAdmin && currentUser.myBranch) {
+    var myType = "";
+    if (currentUser.myBranch.indexOf("(영업)") >= 0) myType = "영업";
+    else if (currentUser.myBranch.indexOf("(서비스)") >= 0) myType = "서비스";
+    else if (currentUser.myBranch.indexOf("(설치)") >= 0) myType = "설치";
+    if (myType) {
+      document.getElementById("selType").value = myType;
+      document.getElementById("selType").disabled = true;
+      onTypeChange();
+    }
+  } else if (!currentUser.isAdmin) {
+    var infoEl = document.getElementById("infoBox");
+    infoEl.innerHTML = "⚠️ 접근 권한이 없습니다. 컬처리더로 등록된 계정만 이용 가능합니다.";
+    document.getElementById("saveBtn").disabled = true;
+  }
+}
+
+/* ── FORM ── */
+function onTypeChange() {
+  var type = document.getElementById("selType").value;
+  var selBranch = document.getElementById("selBranch");
+  var selMonth = document.getElementById("selMonth");
+
+  selBranch.innerHTML = "<option value=''>-- 지사를 선택하세요 --</option>";
+  selBranch.disabled = !type;
+  selMonth.disabled = true;
+  document.getElementById("currentBox").style.display = "none";
+  document.getElementById("saveBtn").disabled = true;
+
+  if (!type) return;
+
+  var list = currentUser.isAdmin ? BRANCHES : (currentUser.myBranch ? [currentUser.myBranch] : []);
+  var filtered = list.filter(function(b){ return b.indexOf("(" + type + ")") >= 0; });
+
+  filtered.forEach(function(b) {
+    var opt = document.createElement("option");
+    opt.value = b; opt.textContent = b;
+    selBranch.appendChild(opt);
+  });
+
+  // 컬처리더는 본인 지사 하나뿐이면 자동 선택
+  if (filtered.length === 1) {
+    selBranch.value = filtered[0];
+    selBranch.disabled = true;
+    selMonth.disabled = false;
+  }
+}
+
+function onSelectChange() {
+  var branch = document.getElementById("selBranch").value;
+  var month  = document.getElementById("selMonth").value;
+  var selMonth = document.getElementById("selMonth");
+  var saveBtn = document.getElementById("saveBtn");
+
+  // 지사 선택되면 월 드롭박스 활성화
+  if (branch) selMonth.disabled = false;
+
+  saveBtn.disabled = !(branch && month);
+
+  if (branch && month) {
+    loadCurrentActivity(branch, month);
+  } else {
+    document.getElementById("currentBox").style.display = "none";
+  }
+}
+
+function loadCurrentActivity(branch, month) {
+  var box = document.getElementById("currentBox");
+  box.style.display = "block";
+  document.getElementById("currentText").textContent = "불러오는 중...";
+  document.getElementById("currentPhoto").style.display = "none";
+
+  sbFetch("activities?branch=eq." + encodeURIComponent(branch) + "&month=eq." + encodeURIComponent(month) + "&select=description")
+    .then(function(r){ return r.json(); })
+    .then(function(rows) {
+      if (rows && rows.length > 0 && rows[0].description) {
+        document.getElementById("currentText").textContent = rows[0].description;
+        document.getElementById("descInput").value = rows[0].description;
+        updateCharCount();
+      } else {
+        document.getElementById("currentText").textContent = "(아직 등록된 내용이 없습니다)";
+        document.getElementById("descInput").value = "";
+        updateCharCount();
+      }
+
+      // 현재 사진 확인
+      var code = BRANCH_CODE[branch];
+      var monthNum = MONTHS_NUM[month];
+      if (code && monthNum) {
+        var imgUrl = STORAGE_BASE + "/activities/" + code + "_" + monthNum + ".jpg?t=" + Date.now();
+        var img = document.getElementById("currentPhoto");
+        img.onload = function(){ img.style.display = "block"; };
+        img.onerror = function(){ img.style.display = "none"; };
+        img.src = imgUrl;
+      }
+    })
+    .catch(function() {
+      document.getElementById("currentText").textContent = "(데이터 로드 실패)";
+    });
+}
+
+function updateCharCount() {
+  var len = document.getElementById("descInput").value.length;
+  document.getElementById("charCount").textContent = len;
+}
+
+/* ── 사진 선택 ── */
+function onPhotoSelect(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    showToast("이미지 파일만 업로드 가능합니다.", "error"); return;
+  }
+
+  var area = document.getElementById("uploadArea");
+  var preview = document.getElementById("photoPreview");
+  var info = document.getElementById("photoInfo");
+
+  // 미리보기
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    preview.src = ev.target.result;
+    preview.style.display = "block";
+    area.querySelector(".upload-icon").style.display = "none";
+    area.querySelector(".upload-text").style.display = "none";
+    area.classList.add("has-file");
+  };
+  reader.readAsDataURL(file);
+
+  // 압축 (Canvas 이용, 최대 1200px, 품질 0.85)
+  resizeImage(file, 1200, 0.85, function(blob, w, h) {
+    selectedFile = blob;
+    var origKB = Math.round(file.size/1024);
+    var newKB  = Math.round(blob.size/1024);
+    info.textContent = "원본 " + origKB + "KB → 압축 후 " + newKB + "KB (" + w + "×" + h + "px)";
+  });
+}
+
+function resizeImage(file, maxSize, quality, callback) {
+  var img = new Image();
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    img.onload = function() {
+      var w = img.width, h = img.height;
+      if (w > maxSize || h > maxSize) {
+        if (w > h) { h = Math.round(h * maxSize/w); w = maxSize; }
+        else       { w = Math.round(w * maxSize/h); h = maxSize; }
+      }
+      var canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      canvas.toBlob(function(blob){ callback(blob, w, h); }, "image/jpeg", quality);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── SAVE ── */
+function saveActivity() {
+  var branch = document.getElementById("selBranch").value;
+  var month  = document.getElementById("selMonth").value;
+  var desc   = document.getElementById("descInput").value.trim();
+
+  if (!branch || !month) { showToast("지사와 월을 선택해주세요.", "error"); return; }
+  if (!desc && !selectedFile) { showToast("내용 또는 사진을 입력해주세요.", "error"); return; }
+
+  var saveBtn = document.getElementById("saveBtn");
+  saveBtn.disabled = true;
+  saveBtn.textContent = "저장 중...";
+
+  var tasks = [];
+
+  // 1. 텍스트 저장 (있으면)
+  if (desc) {
+    tasks.push(
+      sbFetch("activities?branch=eq." + encodeURIComponent(branch) + "&month=eq." + encodeURIComponent(month))
+        .then(function(r){ return r.json(); })
+        .then(function(rows) {
+          if (rows && rows.length > 0) {
+            return sbFetch("activities?branch=eq." + encodeURIComponent(branch) + "&month=eq." + encodeURIComponent(month), "PATCH", { description: desc });
+          } else {
+            return sbFetch("activities", "POST", { branch: branch, month: month, description: desc });
+          }
+        })
+    );
+  }
+
+  // 2. 사진 업로드 (있으면)
+  if (selectedFile) {
+    var code = BRANCH_CODE[branch];
+    var monthNum = MONTHS_NUM[month];
+    var storagePath = "game-images/activities/" + code + "_" + monthNum + ".jpg";
+
+    var progressBar = document.getElementById("progressBar");
+    var progressFill = document.getElementById("progressFill");
+    progressBar.style.display = "block";
+
+    tasks.push(
+      sbUpload(storagePath, selectedFile, function(pct) {
+        progressFill.style.width = pct + "%";
+      })
+    );
+  }
+
+  Promise.all(tasks)
+    .then(function() {
+      showToast("저장 완료! 게임에 바로 반영됩니다 🎉", "success");
+      saveBtn.disabled = false;
+      saveBtn.textContent = "💾 저장하기";
+      document.getElementById("progressBar").style.display = "none";
+      document.getElementById("progressFill").style.width = "0%";
+      // 현재 내용 새로고침
+      loadCurrentActivity(branch, month);
+      // 선택 파일 초기화
+      selectedFile = null;
+      document.getElementById("photoInput").value = "";
+      resetPhotoUI();
+    })
+    .catch(function(e) {
+      showToast("저장 실패: " + e.message, "error");
+      saveBtn.disabled = false;
+      saveBtn.textContent = "💾 저장하기";
+      document.getElementById("progressBar").style.display = "none";
+    });
+}
+
+function resetForm() {
+  document.getElementById("descInput").value = "";
+  document.getElementById("charCount").textContent = "0";
+  document.getElementById("currentBox").style.display = "none";
+  document.getElementById("saveBtn").disabled = true;
+  selectedFile = null;
+  document.getElementById("photoInput").value = "";
+  resetPhotoUI();
+  if (!currentUser || !currentUser.isAdmin) return;
+  document.getElementById("selType").value = "";
+  document.getElementById("selBranch").innerHTML = "<option value=''>-- 지사를 선택하세요 --</option>";
+  document.getElementById("selBranch").disabled = true;
+  document.getElementById("selMonth").value = "";
+  document.getElementById("selMonth").disabled = true;
+}
+
+function resetPhotoUI() {
+  var area = document.getElementById("uploadArea");
+  var preview = document.getElementById("photoPreview");
+  area.classList.remove("has-file");
+  preview.style.display = "none";
+  area.querySelector(".upload-icon").style.display = "block";
+  area.querySelector(".upload-text").style.display = "block";
+  document.getElementById("photoInfo").textContent = "";
+}
+
+/* ── TOAST ── */
+var toastTimer;
+function showToast(msg, type) {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast show" + (type ? " " + type : "");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 3000);
+}
+
+/* ── DRAG & DROP ── */
+document.addEventListener("DOMContentLoaded", function() {
+  var area = document.getElementById("uploadArea");
+  area.addEventListener("dragover", function(e){ e.preventDefault(); area.style.borderColor="#0B4DA2"; });
+  area.addEventListener("dragleave", function(){ area.style.borderColor=""; });
+  area.addEventListener("drop", function(e){
+    e.preventDefault(); area.style.borderColor="";
+    var file = e.dataTransfer.files[0];
+    if (file) {
+      document.getElementById("photoInput").files;
+      var dt = new DataTransfer();
+      dt.items.add(file);
+      document.getElementById("photoInput").files = dt.files;
+      onPhotoSelect({ target: { files: [file] } });
+    }
+  });
+
+  document.getElementById("loginId").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+  document.getElementById("loginName").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
+});
+</script>
+</body>
+</html>

@@ -52,64 +52,62 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 /* ── LOGIN ─── */
 #loginScreen{
   flex-direction:column;align-items:center;justify-content:center;
-  background:linear-gradient(180deg,#87CEEB 0%,#a8d8ea 42%,#c8e6c9 76%,#B8E8B0 100%);
+  background:linear-gradient(135deg,#0B4DA2 0%,#083a7a 50%,#00A652 100%);
   padding:calc(24px + var(--sat)) 20px calc(24px + var(--sab));
   touch-action:auto;
 }
-.login-title{
-  font-size:18px;font-weight:700;color:#0C4DA2;
-  text-align:center;line-height:1.5;margin-bottom:28px;
-}
-.login-box{
+.login-card{
   width:min(360px, calc(100vw - 36px));
-  background:rgba(255,255,255,.92);
-  border:none;
-  border-radius:18px;padding:28px 26px;
-  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-  box-shadow:0 8px 32px rgba(45,125,154,.18);
-  display:flex;flex-direction:column;gap:14px;
+  background:#fff;
+  border-radius:20px;
+  padding:36px 32px 28px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2);
+  display:flex;flex-direction:column;
   touch-action:auto;box-sizing:border-box;
 }
-.login-row{display:flex;align-items:center;gap:10px;}
-.login-row label{
-  font-size:14px;font-weight:700;color:#0C4DA2;
-  width:40px;text-align:right;flex-shrink:0;
+.login-logo{
+  font-size:26px;font-weight:900;color:#0B4DA2;
+  margin-bottom:4px;
 }
-.login-row input,
-.login-row select{
-  flex:1;min-width:0;
-  height:48px;
-  background:#f5f8ff;border:1.5px solid #d0d8e8;border-radius:8px;
-  padding:0 12px;color:#1a2a35;
-  font-size:16px;font-family:inherit;outline:none;
+.login-subtitle{
+  font-size:13px;color:#7a9aaa;
+  margin-bottom:28px;line-height:1.5;
+}
+.login-group{
+  margin-bottom:14px;
+}
+.login-group label{
+  display:block;
+  font-size:12px;font-weight:700;color:#2a4050;
+  margin-bottom:6px;
+}
+.login-group input{
+  width:100%;height:46px;
+  background:#f9fbfd;border:1.5px solid #d0dce6;border-radius:8px;
+  padding:0 14px;color:#1a2a35;
+  font-size:15px;font-family:inherit;outline:none;
   -webkit-appearance:none;appearance:none;
   touch-action:manipulation;
   box-sizing:border-box;
-  width:100%;
+  transition:border-color .15s;
 }
-.login-row input::placeholder{color:#aab8cc;}
-.login-row input:focus,.login-row select:focus{border-color:#0C4DA2;background:#fff;}
-.login-row select option{background:#fff;color:#1a2a35;}
+.login-group input::placeholder{color:#b0c4d0;}
+.login-group input:focus{border-color:#0B4DA2;background:#fff;}
 .login-btn{
-  width:100%;min-height:50px;margin-top:4px;
-  background:#0C4DA2;color:#fff;
+  width:100%;height:50px;margin-top:8px;
+  background:#0B4DA2;color:#fff;
   font-size:16px;font-weight:700;
   border:none;border-radius:10px;cursor:pointer;
   font-family:inherit;touch-action:manipulation;
   transition:background .15s;box-sizing:border-box;
 }
-/* align button right edge with input right edge */
-.login-row-btn{
-  display:flex;gap:10px;
-}
-.login-row-btn .btn-spacer{
-  width:40px;flex-shrink:0;
-}
-.login-row-btn .login-btn{
-  flex:1;min-width:0;
-}
 .login-btn:hover{background:#083a7a;}
 .login-btn:active{background:#083a7a;transform:scale(.98);}
+.login-btn:disabled{opacity:.6;cursor:not-allowed;}
+.login-ver{
+  font-size:11px;color:rgba(255,255,255,.5);
+  text-align:center;margin-top:16px;letter-spacing:.5px;
+}
 
 /* ── WORLD HUD ─── */
 #worldScreen{flex-direction:column;background:transparent;}
@@ -310,7 +308,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .prog-info{font-size:11px;color:#7a9aaa;margin-bottom:10px;}
 .act-card{background:#f5f9fb;border-radius:12px;padding:12px 12px;border:1px solid #d0e4ee;box-sizing:border-box;width:100%;overflow:hidden;}
 .act-month{font-size:11px;font-weight:700;color:#00A651;margin-bottom:4px;}
-.act-desc{font-size:13px;color:#2a4050;line-height:1.6;margin-bottom:9px;}
+.act-desc{font-size:13px;color:#2a4050;line-height:1.6;margin-bottom:9px;white-space:pre-line;}
 .cmt-sec{border-top:1px solid #d0e4ee;padding-top:9px;}
 .cmt-cnt{font-size:11px;color:#7a9aaa;margin-bottom:6px;}
 .cmt-list{margin-bottom:7px;max-height:120px;overflow-y:auto;}
@@ -527,21 +525,19 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
-  <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 15:48 KST</div>
-  <div class="login-box">
-    <div class="login-row">
+  <div class="login-card">
+    <div class="login-logo">🏙️ 컬처리더 시티</div>
+    <div class="login-subtitle">2026년 지사 컬처리더 시티에 오신 것을 환영합니다!</div>
+    <div class="login-group">
       <label>사번</label>
-      <input type="text" id="inp-id" placeholder="사번 입력" maxlength="20">
+      <input type="text" id="inp-id" placeholder="사번을 입력하세요" maxlength="20">
     </div>
-    <div class="login-row">
+    <div class="login-group">
       <label>성명</label>
-      <input type="text" id="inp-name" placeholder="성명 입력" maxlength="10">
+      <input type="text" id="inp-name" placeholder="성명을 입력하세요" maxlength="10">
     </div>
-    <div class="login-row-btn">
-      <div class="btn-spacer"></div>
-      <button class="login-btn" id="loginBtn">입장하기</button>
-    </div>
+    <button class="login-btn" id="loginBtn">입장하기</button>
+    <div class="login-ver">ver. 2026-03-30 17:31 KST</div>
   </div>
 </div>
 
@@ -873,7 +869,7 @@ function loadOrCreateUser(empId, name, dept) {
         document.getElementById("diaCount").textContent = state.diamonds;
         // HUD 이름 업데이트 (최신 본부 반영)
         document.getElementById("hudName").innerHTML =
-          "지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
+          "2026년 지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
           + displayName() + "님</span>";
 
         // 출석 보상: KST 오늘 날짜와 last_login_date 비교
@@ -950,6 +946,24 @@ function logRoulette(result) {
 }
 
 /* 개인 댓글 내역 불러오기 */
+/* activities 테이블에서 활동 설명 불러오기 */
+function loadActivities() {
+  return sbFetch("activities?select=branch,month,description&order=branch.asc,month.asc")
+    .then(function(r){ return r.json(); })
+    .then(function(rows) {
+      if (!rows || rows.length === 0) return;
+      // branchData의 activities desc를 DB 값으로 덮어씌움
+      rows.forEach(function(row) {
+        if (!branchData[row.branch]) return;
+        var mi = MONTHS.indexOf(row.month);
+        if (mi < 0) return;
+        branchData[row.branch].activities[mi].desc = row.description;
+      });
+      console.log("활동 데이터 로드 완료:", rows.length + "개");
+    })
+    .catch(function(e){ console.warn("활동 데이터 로드 실패:", e); });
+}
+
 /* 로그인 시 내 전체 댓글 이력을 state.myCommentedSet에 저장 */
 function loadMyCommentsFull() {
   return sbFetch(
@@ -2218,7 +2232,8 @@ function doLogin() {
     // 내 댓글 이력 + 지사 현황 동시 로드 후 맵 초기화
     Promise.all([
       loadBranchStatus(),
-      loadMyCommentsFull()
+      loadMyCommentsFull(),
+      loadActivities()
     ]).then(function() { initMap(); }).catch(function() { initMap(); });
   });
 }
