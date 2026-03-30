@@ -528,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 11:37 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 13:05 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -1187,9 +1187,8 @@ function openVillage(branch) {
       return "<div class='cmt-item'><span class='cmt-author'>"+c.author+"</span><span class='cmt-text'>"+c.text+"</span></div>";
     }).join("");
 
-    var inputHtml = already
-      ? "<div class='already'>이미 댓글을 작성하셨습니다.</div>"
-      : "<div class='cmt-row' id='cr-"+branch+"-"+idx+"'>"
+    // 초기엔 항상 입력창 표시, DB 로드 후 댓글 있으면 교체
+    var inputHtml = "<div class='cmt-row' id='cr-"+branch+"-"+idx+"'>"
         + "<input class='cmt-inp' id='ci-"+branch+"-"+idx+"' placeholder='댓글을 입력하세요...' maxlength='100'>"
         + "<button class='cmt-sub' data-branch='"+branch+"' data-idx='"+idx+"'>등록</button>"
         + "</div>";
