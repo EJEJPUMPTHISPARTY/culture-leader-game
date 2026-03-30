@@ -528,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 11:20 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 11:37 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -1222,11 +1222,12 @@ function openVillage(branch) {
 
   // Supabase: DB에서 해당 지사 댓글 불러오기
   loadBranchComments(branch).then(function(dbComments) {
-    if (!dbComments || dbComments.length === 0) return;
+    // dbComments가 없어도 빨간점/전구 재계산은 항상 실행
 
+    var dbComments2 = dbComments || [];
     // 월별로 댓글 그룹핑
     var byMonth = {};
-    dbComments.forEach(function(c) {
+    dbComments2.forEach(function(c) {
       if (!byMonth[c.month]) byMonth[c.month] = [];
       byMonth[c.month].push(c);
     });
@@ -1249,7 +1250,7 @@ function openVillage(branch) {
 
       // 내가 이미 댓글 달았는지 확인 (DB 기준)
       var myEmpId = state.userId;
-      var iAlreadyCommented = dbComments.some(function(c) {
+      var iAlreadyCommented = dbComments2.some(function(c) {
         return c.emp_id === myEmpId && c.month === month;
       });
       if (iAlreadyCommented) {
@@ -1265,13 +1266,13 @@ function openVillage(branch) {
     // 내가 댓글 단 월 목록
     var myCommentedMonths = MONTHS.filter(function(month, mi) {
       if (mi === 7) return true; // 12월 제외
-      return dbComments.some(function(c) {
+      return dbComments2.some(function(c) {
         return c.emp_id === state.userId && c.month === month;
       });
     });
     var allCommented = MONTHS.every(function(month, mi) {
       if (mi === 7) return true;
-      return dbComments.some(function(c) {
+      return dbComments2.some(function(c) {
         return c.emp_id === state.userId && c.month === month;
       });
     });
@@ -1896,10 +1897,8 @@ function makeTile(type, x, y, w, h, label, bi) {
   img.style.height = '100%';
   img.style.objectFit = 'contain';
   img.onerror = function() {
-    // 로드 실패 시 fallback: 재시도
-    var src = img.src;
-    img.src = '';
-    setTimeout(function(){ img.src = src + '?t=' + Date.now(); }, 500);
+    // 로드 실패 시 조용히 무시 (로컬 환경 등)
+    img.onerror = null;
   };
   el.appendChild(img);
 
