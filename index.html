@@ -105,7 +105,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 .login-btn:active{background:#083a7a;transform:scale(.98);}
 .login-btn:disabled{opacity:.6;cursor:not-allowed;}
 .login-ver{
-  font-size:11px;color:rgba(255,255,255,.5);
+  font-size:11px;color:#b0c4d0;
   text-align:center;margin-top:16px;letter-spacing:.5px;
 }
 
@@ -527,7 +527,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <div class="screen active" id="loginScreen">
   <div class="login-card">
     <div class="login-logo">🏙️ 컬처리더 시티</div>
-    <div class="login-subtitle">2026년 지사 컬처리더 시티에 오신 것을 환영합니다!</div>
+    <div class="login-subtitle">지사 컬처리더에 오신 것을 환영합니다!</div>
     <div class="login-group">
       <label>사번</label>
       <input type="text" id="inp-id" placeholder="사번을 입력하세요" maxlength="20">
@@ -537,7 +537,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
       <input type="text" id="inp-name" placeholder="성명을 입력하세요" maxlength="10">
     </div>
     <button class="login-btn" id="loginBtn">입장하기</button>
-    <div class="login-ver">ver. 2026-03-30 17:31 KST</div>
+    <div class="login-ver">ver. 2026-03-30 17:47 KST</div>
   </div>
 </div>
 
@@ -869,7 +869,7 @@ function loadOrCreateUser(empId, name, dept) {
         document.getElementById("diaCount").textContent = state.diamonds;
         // HUD 이름 업데이트 (최신 본부 반영)
         document.getElementById("hudName").innerHTML =
-          "2026년 지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
+          "지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
           + displayName() + "님</span>";
 
         // 출석 보상: KST 오늘 날짜와 last_login_date 비교
@@ -952,14 +952,12 @@ function loadActivities() {
     .then(function(r){ return r.json(); })
     .then(function(rows) {
       if (!rows || rows.length === 0) return;
-      // branchData의 activities desc를 DB 값으로 덮어씌움
       rows.forEach(function(row) {
         if (!branchData[row.branch]) return;
         var mi = MONTHS.indexOf(row.month);
         if (mi < 0) return;
         branchData[row.branch].activities[mi].desc = row.description;
       });
-      console.log("활동 데이터 로드 완료:", rows.length + "개");
     })
     .catch(function(e){ console.warn("활동 데이터 로드 실패:", e); });
 }
