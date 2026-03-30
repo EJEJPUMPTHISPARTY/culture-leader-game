@@ -528,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 13:05 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 13:29 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -950,6 +950,26 @@ function logRoulette(result) {
 }
 
 /* 개인 댓글 내역 불러오기 */
+/* 로그인 시 내 전체 댓글 이력을 state.myCommentedSet에 저장 */
+function loadMyCommentsFull() {
+  return sbFetch(
+    "comments?emp_id=eq." + encodeURIComponent(state.userId) +
+    "&select=branch,month&order=created_at.desc"
+  ).then(function(r){ return r.json(); })
+  .then(function(rows) {
+    state.myCommentedSet = {};
+    (rows || []).forEach(function(row) {
+      // key: "지사명|월명" (예: "대구지사(영업)|5월")
+      var mi = MONTHS.indexOf(row.month);
+      if (mi >= 0) {
+        state.myCommentedSet[row.branch + "|" + mi] = true;
+      }
+    });
+    console.log("내 댓글 이력 로드 완료:", Object.keys(state.myCommentedSet).length + "개");
+  })
+  .catch(function(e){ console.warn("댓글 이력 로드 실패:", e); state.myCommentedSet = {}; });
+}
+
 function loadMyComments() {
   return sbFetch(
     "comments?emp_id=eq." + encodeURIComponent(state.userId) +
@@ -1060,9 +1080,10 @@ var MEMBERS_DATA = [
 
 /* ── STATE ──────────────────────────────────────────── */
 var state = {
-  branchCommentLog: {},  // branch -> count for personal ranking
+  branchCommentLog: {},
   userId:"", userName:"", userTeam:"",
-  diamonds:0, comments:[], rouletteCount:0, wins:[], log:[]
+  diamonds:0, comments:[], rouletteCount:0, wins:[], log:[],
+  myCommentedSet: {}  // "지사명|월idx" → true (로그인 시 DB에서 로드)
 };
 var branchData = {};
 BRANCHES.forEach(function(b, i) {
@@ -1176,8 +1197,10 @@ function openVillage(branch) {
     btn.className = "t-btn";
     btn.textContent = MONTHS[idx]+" 활동";
     btn.dataset.vtab = String(idx);
-    // 초기에는 모두 빨간점 표시, DB 로드 후 댓글 있는 탭만 제거
-    btn.classList.add('has-unread');
+    // myCommentedSet 기준으로 초기 빨간점 표시
+    if (!state.myCommentedSet[branch + "|" + idx]) {
+      btn.classList.add('has-unread');
+    }
     monthTabEl.appendChild(btn);
     var pane = document.createElement("div");
     pane.className = "t-pane";
@@ -1322,6 +1345,7 @@ function submitComment(branch, actIdx) {
 
   state.diamonds++;
   state.comments.push({ branch:branch, actIdx:actIdx, text:text, date:new Date().toLocaleDateString("ko-KR") });
+  state.myCommentedSet[branch + "|" + actIdx] = true;
   state.log.unshift({type:"comment", date:new Date().toLocaleDateString("ko-KR"), time:new Date().toLocaleTimeString("ko"), branch:branch, month:MONTHS[actIdx], text:text, dia:"+1"});
   document.getElementById("diaCount").textContent = state.diamonds;
 
@@ -1915,12 +1939,12 @@ function makeTile(type, x, y, w, h, label, bi) {
   tag.textContent = label;
   np.appendChild(tag);
 
-  // 미확인 댓글 전구: 네임택 옆에 표시 (지사 건물만)
+  // 미확인 댓글 전구: 네임택 위 표시 (지사 건물만)
   if (type === 'village') {
-    var d2 = branchData[BRANCHES[bi]];
-    var hasUnread = d2.activities.some(function(act, idx) {
-      if (idx === 7) return false;
-      return !state.comments.some(function(c){ return c.branch===BRANCHES[bi] && c.actIdx===idx; });
+    var branchName = BRANCHES[bi];
+    var hasUnread = MONTHS.some(function(m, idx) {
+      if (idx === 7) return false; // 12월 제외
+      return !state.myCommentedSet[branchName + "|" + idx];
     });
     if (hasUnread) {
       var badge = document.createElement('div');
@@ -2182,10 +2206,14 @@ function doLogin() {
     document.getElementById("diaCount").textContent = state.diamonds;
 
     loadRouletteSettings();
-    loadBranchStatus().then(function() { initMap(); }).catch(function() { initMap(); });
     loadOrCreateUser(id, state.userName, state.userTeam);
     setupDrag();
     setupPinch();
+    // 내 댓글 이력 + 지사 현황 동시 로드 후 맵 초기화
+    Promise.all([
+      loadBranchStatus(),
+      loadMyCommentsFull()
+    ]).then(function() { initMap(); }).catch(function() { initMap(); });
   });
 }
 
