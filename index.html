@@ -185,15 +185,15 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 
 /* ── 미확인 알림 ─── */
 .tile-alert{
-  position:absolute;top:-10px;right:-10px;
+  position:absolute;top:-18px;left:50%;transform:translateX(-50%);
   font-size:28px;line-height:1;
-  z-index:10;pointer-events:none;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));
+  pointer-events:none;
+  z-index:10;
   animation:alertBounce 1.5s ease-in-out infinite;
 }
 @keyframes alertBounce{
   0%,100%{transform:translateY(0);}
-  50%{transform:translateY(-6px);}
+  50%{transform:translateY(-4px);}
 }
 .t-btn.has-unread{position:relative;}
 .t-btn.has-unread::after{
@@ -528,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 10:54 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 11:15 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -875,6 +875,22 @@ function loadOrCreateUser(empId, name, dept) {
         document.getElementById("hudName").innerHTML =
           "지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
           + displayName() + "님</span>";
+
+        // 출석 보상: KST 오늘 날짜와 last_login_date 비교
+        var nowKST = new Date(Date.now() + 9*60*60*1000);
+        var todayKST = nowKST.toISOString().slice(0,10);
+        var lastLogin = rows[0].last_login_date || "";
+        if (lastLogin !== todayKST) {
+          state.diamonds += 1;
+          document.getElementById("diaCount").textContent = state.diamonds;
+          updateUserDiamonds(state.diamonds);
+          logDiamond(1, "출석보상", "일일 첫 로그인");
+          sbFetch("users?emp_id=eq." + encodeURIComponent(empId), "PATCH",
+            { last_login_date: todayKST, updated_at: new Date().toISOString() })
+            .catch(function(e){ console.warn("출석 날짜 업데이트 실패:", e); });
+          setTimeout(function(){ showAttendPopup(); }, 1200);
+        }
+
         return rows[0];
       } else {
         // 신규 사용자 생성
@@ -1308,13 +1324,13 @@ function submitComment(branch, actIdx) {
   var unreadBtn = document.querySelector("#vTabMonths .t-btn[data-vtab='" + actIdx + "']");
   if (unreadBtn) unreadBtn.classList.remove('has-unread');
 
-  // 모든 월 완료 시 건물 💡 뱃지 제거
-  var allDone = branchData[branch].activities.every(function(act, idx) {
-    if (idx === 7) return true;
-    return state.comments.some(function(c){ return c.branch===branch && c.actIdx===idx; });
+  // 미완료 탭이 하나라도 있으면 전구 유지, 모두 완료 시에만 제거
+  var stillUnread = branchData[branch].activities.some(function(act, idx) {
+    if (idx === 7) return false;
+    return !state.comments.some(function(c){ return c.branch===branch && c.actIdx===idx; });
   });
-  if (allDone) {
-    var alertBadge = document.querySelector('.tile-alert#alert-' + (BRANCHES.indexOf(branch)));
+  if (!stillUnread) {
+    var alertBadge = document.querySelector('#alert-' + BRANCHES.indexOf(branch));
     if (alertBadge) alertBadge.remove();
   }
 }
@@ -1864,22 +1880,6 @@ function makeTile(type, x, y, w, h, label, bi) {
   };
   el.appendChild(img);
 
-  // 미확인 댓글 알림 뱃지 (지사 건물만)
-  if (type === 'village') {
-    var d2 = branchData[BRANCHES[bi]];
-    var hasUnread = d2.activities.some(function(act, idx) {
-      if (idx === 7) return false; // 12월 제외
-      return !state.comments.some(function(c){ return c.branch===BRANCHES[bi] && c.actIdx===idx; });
-    });
-    if (hasUnread) {
-      var badge = document.createElement('div');
-      badge.className = 'tile-alert';
-      badge.id = 'alert-' + bi;
-      badge.textContent = '💡';
-      el.appendChild(badge);
-    }
-  }
-
   // 네임플레이트
   var np = document.createElement('div');
   np.className = 'tile-nameplate';
@@ -1893,6 +1893,23 @@ function makeTile(type, x, y, w, h, label, bi) {
   tag.className = 'tile-label' + typeClass;
   tag.textContent = label;
   np.appendChild(tag);
+
+  // 미확인 댓글 전구: 네임택 옆에 표시 (지사 건물만)
+  if (type === 'village') {
+    var d2 = branchData[BRANCHES[bi]];
+    var hasUnread = d2.activities.some(function(act, idx) {
+      if (idx === 7) return false;
+      return !state.comments.some(function(c){ return c.branch===BRANCHES[bi] && c.actIdx===idx; });
+    });
+    if (hasUnread) {
+      var badge = document.createElement('div');
+      badge.className = 'tile-alert';
+      badge.id = 'alert-' + bi;
+      badge.textContent = '💡';
+      el.appendChild(badge);
+    }
+  }
+
   el.appendChild(np);
 
   // 툴팁 (데스크탑)
@@ -2292,6 +2309,21 @@ function closeRltPopup() {
 }
 window.closeRltPopup = closeRltPopup;
 
+function showAttendPopup() {
+  var popup = document.getElementById("attendPopup");
+  var box = document.getElementById("attendBox");
+  popup.style.display = "flex";
+  setTimeout(function(){ box.style.transform = "scale(1)"; }, 20);
+  launchConfetti();
+}
+function closeAttendPopup() {
+  var box = document.getElementById("attendBox");
+  var popup = document.getElementById("attendPopup");
+  box.style.transform = "scale(0)";
+  setTimeout(function(){ popup.style.display = "none"; stopConfetti(); }, 350);
+}
+window.closeAttendPopup = closeAttendPopup;
+
 
 
 
@@ -2548,6 +2580,16 @@ window.closeRltPopup = closeRltPopup;
     ">확인</button>
   </div>
 </div>
+<!-- 출석 보상 팝업 -->
+<div id="attendPopup" style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;z-index:1002;pointer-events:none;">
+  <div id="attendBox" style="background:#fff;border-radius:24px;padding:36px 40px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);border:3px solid #FDB813;pointer-events:auto;max-width:320px;width:calc(100vw - 40px);transform:scale(0);transition:transform .4s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:52px;margin-bottom:12px;line-height:1;">&#x1F48E;</div>
+    <div style="font-size:20px;font-weight:900;color:#1a2a35;margin-bottom:8px;">오늘의 출석 보상!</div>
+    <div style="font-size:14px;color:#5a7a8a;margin-bottom:20px;line-height:1.6;">매일 첫 로그인 시 다이아 1개를 드려요!<br><span style="font-weight:700;color:#0C4DA2;">+1 💎 획득</span></div>
+    <button onclick="closeAttendPopup()" style="background:#0C4DA2;color:#fff;font-size:14px;font-weight:700;padding:11px 36px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;touch-action:manipulation;">감사해요!</button>
+  </div>
+</div>
+
 <canvas id="confettiCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;"></canvas>
 </body>
 </html>
