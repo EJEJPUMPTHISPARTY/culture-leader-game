@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>지사 컬처리더 마을</title>
+<title>지사 컬처리더 시티</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;900&display=swap');
 :root {
@@ -165,17 +165,22 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 }
 .tile-label{
   background:rgba(18,42,56,.88);color:#fff;
-  font-size:11px;font-weight:700;
-  padding:3px 10px;height:22px;
-  border-radius:11px;
+  font-size:22px;font-weight:700;
+  padding:6px 20px;height:40px;
+  border-radius:20px;
   display:flex;align-items:center;
+  white-space:nowrap;
 }
+.tile-label.sales{ background:#FBB812;color:#fff; }
+.tile-label.install{ background:#00A652;color:#fff; }
+.tile-label.service{ background:#0B4DA2;color:#fff; }
 .tile-label.central{
-  padding:3px 14px;font-size:12px;
-  background:#00A651;color:#fff;
+  padding:7px 26px;font-size:30px;height:50px;border-radius:25px;
+  background:#111;color:#fff;
 }
 .tile-label.hall{
-  background:#00A651;color:#fff;font-weight:700;font-size:12px;
+  background:#111;color:#fff;font-weight:700;font-size:30px;
+  padding:7px 26px;height:50px;border-radius:25px;
 }
 
 /* ── TOOLTIP ─── */
@@ -501,7 +506,8 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
-  <p class="login-title">지사 컬처리더 마을에 오신 것을<br>환영합니다!</p>
+  <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 09:34 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -522,7 +528,14 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <div class="screen" id="worldScreen">
   <div class="hud">
     <div class="hud-name" id="hudName"></div>
-    <div class="dia-badge">💎 <span id="diaCount">0</span></div>
+    <div style="display:flex;flex-direction:column;gap:6px;pointer-events:none;">
+      <div class="dia-badge">💎 <span id="diaCount">0</span></div>
+      <div style="background:rgba(255,255,255,.88);border-radius:10px;padding:8px 12px;font-size:13px;font-weight:700;line-height:1.8;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.75);">
+        <div><span style="color:#FBB812;font-size:16px;">●</span> 영업지사</div>
+        <div><span style="color:#00A652;font-size:16px;">●</span> 설치지사</div>
+        <div><span style="color:#0B4DA2;font-size:16px;">●</span> 서비스지사</div>
+      </div>
+    </div>
   </div>
   <div id="mapWrap"><div id="mapCanvas"></div></div>
   <div class="zoom-ctrl">
@@ -589,10 +602,10 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
         <div class="info-text" style="text-align:left">
           <p style="margin-bottom:8px">1. 사번, 팀, 이름으로 로그인합니다.</p>
           <p style="margin-bottom:8px">2. 중앙광장을 클릭하면 컬처리더 정보를 확인할 수 있습니다.</p>
-          <p style="margin-bottom:8px">3. 지사 마을을 클릭하면 월별 활동을 확인할 수 있습니다.</p>
+          <p style="margin-bottom:8px">3. 지사를 클릭하면 월별 활동을 확인할 수 있습니다.</p>
           <p style="margin-bottom:8px">4. 월별 활동에 댓글을 달면 다이아 1개를 획득합니다. <span style="font-size:11px;opacity:.65">(게시물당 1댓글)</span></p>
           <p style="margin-bottom:8px">5. 다이아 20개로 경품 룰렛 1회 이용 가능합니다.</p>
-          <p>6. 지사별 댓글 50개 누적마다 마을이 업그레이드됩니다. (최대 Lv.4)</p>
+          <p>6. 지사별 댓글 50개 누적마다 시티가 업그레이드됩니다. (최대 Lv.4)</p>
         </div>
       </div>
       <div class="t-pane" id="cntNotice">
@@ -839,7 +852,7 @@ function loadOrCreateUser(empId, name, dept) {
         document.getElementById("diaCount").textContent = state.diamonds;
         // HUD 이름 업데이트 (최신 본부 반영)
         document.getElementById("hudName").innerHTML =
-          "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
+          "지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
           + displayName() + "님</span>";
         return rows[0];
       } else {
@@ -967,12 +980,13 @@ var LV_COLOR = {"1":"#9E9E9E","2":"#FDB813","3":"#00A651","4":"#0C4DA2","5":"#FD
 
 /* ── CONSTANTS ──────────────────────────────────────── */
 var BRANCHES = [
-  "대구지사(영업)","부산지사(영업)","울산지사(영업)","경남지사(영업)","대전·충청지사(영업)",
-  "광주지사(영업)","전주지사(영업)","강북지사(서비스)","강서지사(서비스)","인천지사(서비스)",
+  "대구지사(영업)","부산지사(영업)","대전·충청지사(영업)",
+  "광주지사(영업)","강서지사(서비스)","전주지사(영업)",
   "강남지사(서비스)","분당지사(서비스)","수원지사(서비스)","강원지사(서비스)","대구지사(서비스)",
   "울산지사(서비스)","부산지사(서비스)","경남지사(서비스)","대전·충청지사(서비스)","광주지사(서비스)",
   "전주지사(서비스)","제주지사(서비스)","강북·강원지사(설치)","강남지사(설치)","인천지사(설치)",
-  "중부지사(설치)","대구·울산지사(설치)","부산·경남지사(설치)","대전지사(설치)","광주·전주·제주지사(설치)"
+  "중부지사(설치)","대구·울산지사(설치)","강북지사(서비스)","부산·경남지사(설치)","대전지사(설치)","광주·전주·제주지사(설치)",
+  "울산지사(영업)","경남지사(영업)","인천지사(서비스)"
 ];
 var MONTHS = ["5월","6월","7월","8월","9월","10월","11월","12월"];
 var ROULETTE = [
@@ -985,7 +999,7 @@ var ROULETTE = [
   {name:"다이아 5개", color:"#9B59B6"},
   {name:"다음기회에", color:"#8a9aa5"}
 ];
-var LEADERS = ["이승근","이현민","조지혁","강제혁","이경필","이성기","조상진","정상민","이대로","박태수","홍성달","이정호","유진만","엄주호","이규호","강무중","김명환","신성진","신하늘","선동률","손경식","송진혁","김연식","오세훈","이현용","강환웅","손성욱","정형교","임승원","정상기"];
+var LEADERS = ["이승근","이현민","이경필","이성기","이대로","조상진","홍성달","이정호","유진만","엄주호","이규호","강무중","김명환","신성진","신하늘","선동률","손경식","송진혁","김연식","오세훈","이현용","강환웅","정상민","정형교","임승원","정상기","조지혁","강제혁","박태수"];
 var LEADER_INTRO = {"대구지사(영업)":"안녕하세요! 대구지사(영업) 컬처리더 이승근입니다.","부산지사(영업)":"안녕하세요! 부산지사(영업) 컬처리더 이현민입니다.","울산지사(영업)":"안녕하세요! 울산지사(영업) 컬처리더 조지혁입니다.","경남지사(영업)":"안녕하세요! 경남지사(영업) 컬처리더 강제혁입니다.","대전·충청지사(영업)":"안녕하세요! 대전·충청지사(영업) 컬처리더 이경필입니다.","광주지사(영업)":"안녕하세요! 광주지사(영업) 컬처리더 이성기입니다.","전주지사(영업)":"안녕하세요! 전주지사(영업) 컬처리더 조상진입니다.","강북지사(서비스)":"안녕하세요! 강북지사(서비스) 컬처리더 정상민입니다.","강서지사(서비스)":"안녕하세요! 강서지사(서비스) 컬처리더 이대로입니다.","인천지사(서비스)":"안녕하세요! 인천지사(서비스) 컬처리더 박태수입니다.","강남지사(서비스)":"안녕하세요! 강남지사(서비스) 컬처리더 홍성달입니다.","분당지사(서비스)":"안녕하세요! 분당지사(서비스) 컬처리더 이정호입니다.","수원지사(서비스)":"안녕하세요! 수원지사(서비스) 컬처리더 유진만입니다.","강원지사(서비스)":"안녕하세요! 강원지사(서비스) 컬처리더 엄주호입니다.","대구지사(서비스)":"안녕하세요! 대구지사(서비스) 컬처리더 이규호입니다.","울산지사(서비스)":"안녕하세요! 울산지사(서비스) 컬처리더 강무중입니다.","부산지사(서비스)":"안녕하세요! 부산지사(서비스) 컬처리더 김명환입니다.","경남지사(서비스)":"안녕하세요! 경남지사(서비스) 컬처리더 신성진입니다.","대전·충청지사(서비스)":"안녕하세요! 대전·충청지사(서비스) 컬처리더 신하늘입니다.","광주지사(서비스)":"안녕하세요! 광주지사(서비스) 컬처리더 선동률입니다.","전주지사(서비스)":"안녕하세요! 전주지사(서비스) 컬처리더 손경식입니다.","제주지사(서비스)":"안녕하세요! 제주지사(서비스) 컬처리더 송진혁입니다.","강북·강원지사(설치)":"안녕하세요! 강북·강원지사(설치) 컬처리더 김연식입니다.","강남지사(설치)":"안녕하세요! 강남지사(설치) 컬처리더 오세훈입니다.","인천지사(설치)":"안녕하세요! 인천지사(설치) 컬처리더 이현용입니다.","중부지사(설치)":"안녕하세요! 중부지사(설치) 컬처리더 강환웅입니다.","대구·울산지사(설치)":"안녕하세요! 대구·울산지사(설치) 컬처리더 손성욱입니다.","부산·경남지사(설치)":"안녕하세요! 부산·경남지사(설치) 컬처리더 정형교입니다.","대전지사(설치)":"안녕하세요! 대전지사(설치) 컬처리더 임승원입니다.","광주·전주·제주지사(설치)":"안녕하세요! 광주·전주·제주지사(설치) 컬처리더 정상기입니다."};
 
 var LEADER_EMP_ID = {"대구지사(영업)":"2022605","부산지사(영업)":"2032546","울산지사(영업)":"2021510","경남지사(영업)":"2021501","대전·충청지사(영업)":"2017555","광주지사(영업)":"2026040","전주지사(영업)":"2018128","강북지사(서비스)":"2021978","강서지사(서비스)":"2023903","인천지사(서비스)":"2022982","강남지사(서비스)":"2020017","분당지사(서비스)":"2023865","수원지사(서비스)":"2021340","강원지사(서비스)":"2022516","대구지사(서비스)":"2023873","울산지사(서비스)":"2026252","부산지사(서비스)":"2022001","경남지사(서비스)":"2023849","대전·충청지사(서비스)":"2022010","광주지사(서비스)":"2022486","전주지사(서비스)":"2007924","제주지사(서비스)":"2024683","강북·강원지사(설치)":"2018632","강남지사(설치)":"3018202","인천지사(설치)":"2019957","중부지사(설치)":"2012634","대구·울산지사(설치)":"2020831","부산·경남지사(설치)":"3016480","대전지사(설치)":"2028298","광주·전주·제주지사(설치)":"3012913"}; // 사번: 컬처리더 사번 (사진 로드용)
@@ -1028,219 +1042,6 @@ BRANCHES.forEach(function(b, i) {
 });
 
 /* ── MAP ────────────────────────────────────────────── */
-var MAP_W=2400, MAP_H=1800;
-/* 건물별 타일 크기 (원본 스케일 비율 유지) */
-var TILE_SIZES = {
-  lv1:  {w:130, h:110},
-  lv2:  {w:155, h:172},
-  lv3:  {w:175, h:207},
-  lv4:  {w:185, h:358},
-  hq:   {w:317, h:259},
-  hall: {w:220, h:323}
-};
-
-var C_W=380, C_H=253;   // central
-var V_W=112, V_H=100;   // village (70% of original)
-var zoom=1, isDrag=false, wasDrag=false;
-var dragStart={x:0,y:0}, off={x:0,y:0};
-var ZOOM_MIN=0.3, ZOOM_MAX=2.5;
-
-function applyT() {
-  var c = document.getElementById("mapCanvas");
-  c.style.transform = "translate("+off.x+"px,"+off.y+"px) scale("+zoom+")";
-}
-
-function getPositions(cx, cy, n) {
-  // 전체 6x6=36 슬롯, 본부(슬롯 3,4,9,10 = col=2~3,row=0~1) 제외
-  var HQ = {'2,0':1,'3,0':1,'2,1':1,'3,1':1};
-  var slots = [];
-  for (var r = 0; r < GRID_ROWS; r++) {
-    for (var c = 0; c < GRID_COLS; c++) {
-      if (HQ[c+','+r]) continue;
-      slots.push([c, r]);
-    }
-  }
-  var pos = [];
-  for (var i = 0; i < Math.min(n, slots.length); i++) {
-    pos.push(blockCtr(slots[i][0], slots[i][1], cx, cy));
-  }
-  return pos;
-}
-
-function initMap() {
-  var canvas = document.getElementById("mapCanvas");
-  canvas.style.width  = MAP_W+"px";
-  canvas.style.height = MAP_H+"px";
-  canvas.innerHTML = "";
-
-  // cx, cy 먼저 선언
-  var cx = MAP_W/2, cy = MAP_H/2 - 20;
-
-  // 아이소메트릭 도로 SVG 배경 삽입
-  var roadSvg = document.createElementNS("http://www.w3.org/2000/svg","svg");
-  roadSvg.setAttribute("width", MAP_W);
-  roadSvg.setAttribute("height", MAP_H);
-  roadSvg.style.position = "absolute";
-  roadSvg.style.left = "0"; roadSvg.style.top = "0";
-  roadSvg.style.pointerEvents = "none";
-  roadSvg.innerHTML = buildRoadSVG(MAP_W, MAP_H, cx, cy);
-  canvas.appendChild(roadSvg);
-
-  // 컬처리더본부: col=2, row=1 중심
-  var hqSize = TILE_SIZES.hq;
-  var hqCenter = blockCenter(2, 1, cx, cy);
-  var hqBottom = hqCenter.y + CELL_H * 0.25;
-  canvas.appendChild(makeTile("central", hqCenter.x - hqSize.w/2, hqBottom - hqSize.h, hqSize.w, hqSize.h, "컬처리더 본부", null));
-
-  // 명예의전당: col=0, row=-1 (본부 왼쪽)
-  var hallSize = TILE_SIZES.hall;
-  var hallCenter = blockCenter(0, -1, cx, cy);
-  var hallBottom = hallCenter.y + CELL_H * 0.25;
-  canvas.appendChild(makeTile("hall", hallCenter.x - hallSize.w/2, hallBottom - hallSize.h, hallSize.w, hallSize.h, "명예의 전당 (랭킹)", null));
-
-  var positions = getPositions(cx, cy, BRANCHES.length);
-  for (var i=0; i<BRANCHES.length; i++) {
-    var p = positions[i];
-    var lv = branchData[BRANCHES[i]].level;
-    var ts = TILE_SIZES["lv"+lv] || TILE_SIZES.lv1;
-    // 블록 하단에 건물 발 맞추기
-    var bBottom = p.y + CELL_H * 0.25;
-    canvas.appendChild(makeTile("village", p.x-ts.w/2, bBottom-ts.h, ts.w, ts.h, BRANCHES[i], i));
-  }
-
-  var wrap = document.getElementById("mapWrap");
-  off.x = (wrap.offsetWidth  - MAP_W) / 2;
-  off.y = (wrap.offsetHeight - MAP_H) / 2;
-  applyT();
-}
-
-function refreshTiles() {
-  // 레벨업 후 맵 전체 재초기화 (가장 안정적인 방법)
-  initMap();
-}
-
-/* ── DRAG / PINCH ───────────────────────────────────── */
-function setupDrag() {
-  var wrap = document.getElementById("mapWrap");
-
-  wrap.addEventListener("mousedown", function(e) {
-    if (e.button !== 0) return;
-    isDrag = true; wasDrag = false;
-    dragStart = { x: e.clientX - off.x, y: e.clientY - off.y };
-    wrap.style.cursor = "grabbing";
-  });
-  window.addEventListener("mousemove", function(e) {
-    if (!isDrag) return;
-    wasDrag = true;
-    off.x = e.clientX - dragStart.x;
-    off.y = e.clientY - dragStart.y;
-    applyT();
-  });
-  window.addEventListener("mouseup", function() {
-    isDrag = false;
-    setTimeout(function(){ wasDrag = false; }, 50);
-    document.getElementById("mapWrap").style.cursor = "grab";
-  });
-  wrap.addEventListener("wheel", function(e) {
-    e.preventDefault();
-    var d = e.deltaY > 0 ? -0.09 : 0.09;
-    var nz = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom+d));
-    var s = nz/zoom;
-    off.x = e.clientX - s*(e.clientX - off.x);
-    off.y = e.clientY - s*(e.clientY - off.y);
-    zoom = nz; applyT();
-  }, {passive:false});
-}
-
-function setupPinch() {
-  var wrap = document.getElementById("mapWrap");
-  var ld=0, lmx=0, lmy=0;
-
-  wrap.addEventListener("touchstart", function(e) {
-    e.preventDefault(); wasDrag = false;
-    if (e.touches.length === 2) {
-      isDrag = false;
-      ld  = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-      lmx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      lmy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-    } else if (e.touches.length === 1) {
-      isDrag = true;
-      dragStart = { x: e.touches[0].clientX - off.x, y: e.touches[0].clientY - off.y };
-    }
-  }, {passive:false});
-
-  wrap.addEventListener("touchmove", function(e) {
-    e.preventDefault();
-    if (e.touches.length === 2) {
-      var d  = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-      var mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-      var my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-      if (ld > 0) {
-        var nz = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoom*(d/ld)));
-        var r  = nz/zoom;
-        off.x  = mx - r*(mx - off.x);
-        off.y  = my - r*(my - off.y);
-        zoom   = nz;
-      }
-      off.x += mx - lmx; off.y += my - lmy;
-      ld = d; lmx = mx; lmy = my; applyT();
-    } else if (e.touches.length === 1 && isDrag) {
-      var dx = e.touches[0].clientX - (dragStart.x + off.x);
-      var dy = e.touches[0].clientY - (dragStart.y + off.y);
-      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) wasDrag = true;
-      off.x = e.touches[0].clientX - dragStart.x;
-      off.y = e.touches[0].clientY - dragStart.y;
-      applyT();
-    }
-  }, {passive:false});
-
-  wrap.addEventListener("touchend", function(e) {
-    if (e.touches.length < 2) ld = 0;
-    if (e.touches.length === 0) { isDrag = false; setTimeout(function(){ wasDrag = false; }, 150); }
-  }, {passive:true});
-  wrap.addEventListener("touchcancel", function() { isDrag=false; ld=0; }, {passive:true});
-}
-
-/* ── LOGIN ──────────────────────────────────────────── */
-function doLogin() {
-  var id   = document.getElementById("inp-id").value.trim();
-  var name = document.getElementById("inp-name").value.trim();
-  if (!id || !name) { showToast("사번과 이름을 입력해주세요"); return; }
-
-  var btn = document.getElementById("loginBtn");
-  btn.disabled = true;
-  btn.textContent = "확인 중...";
-
-  // Supabase: 사번+이름 검증 및 본부 자동 조회
-  validateUser(id, name).then(function(result) {
-    if (!result.valid) {
-      showToast(result.reason);
-      btn.disabled = false;
-      btn.textContent = "입장하기";
-      return;
-    }
-
-    // DB에서 가져온 본부+이름 사용
-    state.userId   = id;
-    state.userName = result.dbName || name;
-    state.userTeam = result.dept || "";
-
-    document.getElementById("loginScreen").classList.remove("active");
-    document.getElementById("worldScreen").classList.add("active");
-    document.getElementById("hudName").innerHTML =
-      "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
-      + displayName() + "님</span>";
-    document.getElementById("diaCount").textContent = state.diamonds;
-
-    loadRouletteSettings();
-    loadBranchStatus().then(function() { initMap(); }).catch(function() { initMap(); });
-    loadOrCreateUser(id, state.userName, state.userTeam);
-    setupDrag();
-    setupPinch();
-  });
-}
-
-/* ── MODALS ─────────────────────────────────────────── */
 function openCentral() {
   var el = document.getElementById("memberList");
   el.innerHTML = "";
@@ -1452,7 +1253,7 @@ function submitComment(branch, actIdx) {
   var d = branchData[branch];
   d.activities[actIdx].comments.push({ author:displayName(), text:text });
   d.comments++;
-  var newLv = Math.min(4, Math.floor(d.comments/2)+1);
+  var newLv = Math.min(4, d.comments+1);  // 테스트: 댓글 1개당 레벨업
   if (newLv > d.level) {
     var oldLv = d.level;
     d.level = newLv;
@@ -1490,9 +1291,31 @@ function openMyActivity() {
   document.getElementById("sMyRlt").textContent = state.rouletteCount;
   document.getElementById("sMyWin").textContent = state.wins.filter(function(w){ return w!=="다음기회에"; }).length;
   var log = document.getElementById("actLog");
-  log.innerHTML = state.log.length === 0
-    ? "<div style='font-size:12px;color:rgba(255,255,255,.4);padding:10px 0'>아직 활동 기록이 없습니다.</div>"
-    : state.log.slice(0,20).map(function(l){ return "<div class='log-item'>"+l+"</div>"; }).join("");
+  if (state.log.length === 0) {
+    log.innerHTML = "<div style='font-size:12px;color:#aab8cc;padding:10px 0'>아직 활동 기록이 없습니다.</div>";
+  } else {
+    log.innerHTML = state.log.slice(0, 20).map(function(l) {
+      var icon = "", text = "", dateStr = (l.date || "") + " " + (l.time || "");
+      if (l.type === "comment") {
+        icon = "💬";
+        text = l.branch + " " + l.month + " 댓글 등록 · 다이아 " + (l.dia || "+1") + "개";
+        text += "<div style='font-size:11px;color:#7a9aaa;margin-top:2px'>\"" + (l.text||"") + "\"</div>";
+      } else if (l.type === "spend") {
+        icon = "🎰";
+        text = "룰렛 응모 · 다이아 " + (l.diaChange||"-1") + "개 소모";
+      } else if (l.type === "roulette") {
+        var win = l.result !== "다음기회에";
+        icon = win ? "🎉" : "😢";
+        text = "룰렛 결과: " + l.result + (l.diaChange && l.diaChange !== "0" ? " · 다이아 " + l.diaChange + "개" : "");
+      } else {
+        text = JSON.stringify(l);
+      }
+      return "<div class='log-item'>"
+        + "<div style='font-size:10px;color:#9ab0bb;margin-bottom:2px'>" + dateStr + "</div>"
+        + "<div>" + icon + " " + text + "</div>"
+        + "</div>";
+    }).join("");
+  }
   document.getElementById("myModal").classList.add("on");
 }
 
@@ -1802,29 +1625,6 @@ window.addEventListener("DOMContentLoaded", function() {
 
 
 
-/* 이름 표시 헬퍼: 본부/이름 형식 */
-function displayName() {
-  return (state.userTeam ? state.userTeam + "/" : "") + state.userName;
-}
-
-/* ── STORAGE 이미지 URL 헬퍼 ─────────────────────────── */
-var STORAGE_BASE = "https://rgdnkbzukfpxdrkvqhvg.supabase.co/storage/v1/object/public/game-image";
-var BRANCH_CODE = {"대구지사(영업)":"daegu-sales","부산지사(영업)":"busan-sales","울산지사(영업)":"ulsan-sales","경남지사(영업)":"gyeongnam-sales","대전·충청지사(영업)":"daejeon-sales","광주지사(영업)":"gwangju-sales","전주지사(영업)":"jeonju-sales","강북지사(서비스)":"gangbuk-service","강서지사(서비스)":"gangseo-service","인천지사(서비스)":"incheon-service","강남지사(서비스)":"gangnam-service","분당지사(서비스)":"bundang-service","수원지사(서비스)":"suwon-service","강원지사(서비스)":"gangwon-service","대구지사(서비스)":"daegu-service","울산지사(서비스)":"ulsan-service","부산지사(서비스)":"busan-service","경남지사(서비스)":"gyeongnam-service","대전·충청지사(서비스)":"daejeon-service","광주지사(서비스)":"gwangju-service","전주지사(서비스)":"jeonju-service","제주지사(서비스)":"jeju-service","강북·강원지사(설치)":"gangbuk-install","강남지사(설치)":"gangnam-install","인천지사(설치)":"incheon-install","중부지사(설치)":"jungbu-install","대구·울산지사(설치)":"daegu-install","부산·경남지사(설치)":"busan-install","대전지사(설치)":"daejeon-install","광주·전주·제주지사(설치)":"gwangju-install"};
-
-function leaderImgUrl(empId) {
-  return STORAGE_BASE + "/leaders/" + empId + ".jpg";
-}
-function activityImgUrl(branch, month) {
-  var code = BRANCH_CODE[branch] || "unknown";
-  var monthNum = String(MONTHS.indexOf(month) + 5).padStart(2, "0");
-  return STORAGE_BASE + "/activities/" + code + "_" + monthNum + ".jpg";
-}
-function imgWithFallback(url, fallbackEl) {
-  var img = new Image();
-  img.onload  = function() { fallbackEl.innerHTML = "<img src='" + url + "' style='width:100%;height:100%;object-fit:cover;border-radius:50%;'>" };
-  img.onerror = function() { /* 사진 없으면 기본 아이콘 유지 */ };
-  img.src = url;
-}
 
 
 /* 검정 배경 제거 (Canvas 픽셀 처리) */
@@ -1858,10 +1658,20 @@ function removeBlackBg(imgEl, threshold) {
 
 
 /* ══ 아이소메트릭 맵 설정 ══════════════════════════════════════ */
-var MAP_W = 2800, MAP_H = 2000;
-var CELL_W = 280;   // 블록 가로
-var CELL_H = 140;   // 블록 세로
-var ROAD_W = 44;    // 도로 너비
+var zoom=1, isDrag=false, wasDrag=false;
+var dragStart={x:0,y:0}, off={x:0,y:0};
+var ZOOM_MIN=0.15, ZOOM_MAX=2.5;
+
+function applyT() {
+  var c = document.getElementById("mapCanvas");
+  c.style.transform = "translate("+off.x+"px,"+off.y+"px) scale("+zoom+")";
+}
+
+
+var MAP_W = 5400, MAP_H = 3900;
+var CELL_W = 680;   // 블록 가로 (10% 축소)
+var CELL_H = 340;   // 블록 세로 (10% 축소)
+var ROAD_W = 70;    // 도로 너비
 var COL_OFF = 3;    // 그리드 중심 col 오프셋
 var ROW_OFF = 3;    // 그리드 중심 row 오프셋
 var GRID_COLS = 6;
@@ -1869,12 +1679,12 @@ var GRID_ROWS = 6;
 
 /* 타일 크기 */
 var TILE_SIZES = {
-  lv1:  {w:130, h:110},
-  lv2:  {w:155, h:172},
-  lv3:  {w:175, h:207},
-  lv4:  {w:185, h:358},
-  hq:   {w:317, h:259},
-  hall: {w:220, h:323}
+  lv1:  {w:200, h:170},
+  lv2:  {w:240, h:265},
+  lv3:  {w:270, h:320},
+  lv4:  {w:290, h:550},
+  hq:   {w:900, h:736},
+  hall: {w:612, h:900}
 };
 
 /* 탑뷰(col,row) → 아이소메트릭 픽셀 */
@@ -1929,29 +1739,35 @@ function buildRoadSVG(W, H, cx, cy) {
   }
 
   // 탑뷰 격자 경계선 → 아이소메트릭 도로
-  // 본부: col=2~3, row=0~1 (슬롯 3,4,9,10) 내부 경계선 제거
+  // 본부: col=0~1, row=2~3 (슬롯 9,10,15,16) 내부 경계선 제거
 
-  // col 경계선 (세로): col=3은 row=0~2 구간 제거
+  // col 경계선 (세로): col=1은 row=2~4 구간 제거 (본부 내부)
   for (var c = 0; c <= GRID_COLS; c++) {
-    if (c === 3) {
-      addRoad(c, 2, c, GRID_ROWS);  // row=2 이후만
+    if (c === 1) {
+      addRoad(c, 0, c, 2);           // row=0~2
+      addRoad(c, 4, c, GRID_ROWS);   // row=4~6
     } else {
       addRoad(c, 0, c, GRID_ROWS);
     }
   }
-  // row 경계선 (가로): row=1은 col=2~4 구간 제거
+  // row 경계선 (가로): row=3은 col=0~2 구간 제거 (본부 내부)
   for (var r = 0; r <= GRID_ROWS; r++) {
-    if (r === 1) {
-      addRoad(0, r, 2, r);
-      addRoad(4, r, GRID_COLS, r);
+    if (r === 3) {
+      addRoad(2, r, GRID_COLS, r);   // col=2~6만
     } else {
       addRoad(0, r, GRID_COLS, r);
     }
   }
-  // 명예의전당 구역 도로
-  addRoad(-1, 0, -1, 2);
-  addRoad(-1, 0, 0, 0);
-  addRoad(-1, 2, 0, 2);
+  // 명예의전당: 도로 없음 (독립 섬)
+  // 사선 도로 4개: 교차점에서 도시 밖으로 연결
+  // 4번(col=6,row=0) 동북쪽↗: col+,row- 방향
+  addRoad(6, 0, 16, -10);
+  // 10번(col=6,row=6) 동남쪽↘: col+,row+ 방향
+  addRoad(6, 6, 16, 16);
+  // 16번(col=0,row=6) 남서쪽↙: col-,row+ 방향
+  addRoad(0, 6, -10, 16);
+  // 북쪽↑: 대구지사(영업) 위(col=0,row=0)에서 col-,row- 동시 방향
+  addRoad(0, 0, -10, -10);
 
   svg += roads + dashes;
   return svg;
@@ -1960,15 +1776,18 @@ function buildRoadSVG(W, H, cx, cy) {
 /* 지사 건물 위치 반환 */
 function getPositions(cx, cy, n) {
   // 탑뷰 6x6 그리드
-  // 컬처리더본부: col=3~4, row=0~1 (4칸 병합) 제외
-  var HQ = {'3,0':1,'4,0':1,'3,1':1,'4,1':1};
+  // 컬처리더본부: col=0~1, row=2~3 (4칸 병합) 제외
+  var HQ = {'0,2':1,'1,2':1,'0,3':1,'1,3':1,'0,1':1};  // 본부에 가려지는 슬롯 제외
   var slots = [];
   for (var r = 0; r < GRID_ROWS; r++) {
     for (var c = 0; c < GRID_COLS; c++) {
-      if (HQ[c+','+r]) continue;  // 본부 자리
+      if (HQ[c+','+r]) continue;
       slots.push([c, r]);
     }
   }
+  // 슬롯3(col=2,row=0), 슬롯4(col=5,row=0)에 있던 지사를
+  // 슬롯29(col=2,row=5), 슬롯30(col=3,row=5) 위치로 이동:
+  // slots 배열에서 해당 슬롯을 뒤로 보냄
   var pos = [];
   for (var i = 0; i < Math.min(n, slots.length); i++) {
     pos.push(blockCtr(slots[i][0], slots[i][1], cx, cy));
@@ -2007,8 +1826,13 @@ function makeTile(type, x, y, w, h, label, bi) {
   var np = document.createElement('div');
   np.className = 'tile-nameplate';
   var tag = document.createElement('div');
-  tag.className = 'tile-label'
-    + (type === 'central' ? ' central' : type === 'hall' ? ' hall' : '');
+  var typeClass = '';
+  if (type === 'central') typeClass = ' central';
+  else if (type === 'hall') typeClass = ' hall';
+  else if (label.indexOf('(영업)') >= 0) typeClass = ' sales';
+  else if (label.indexOf('(설치)') >= 0) typeClass = ' install';
+  else if (label.indexOf('(서비스)') >= 0) typeClass = ' service';
+  tag.className = 'tile-label' + typeClass;
   tag.textContent = label;
   np.appendChild(tag);
   el.appendChild(np);
@@ -2081,18 +1905,18 @@ function initMap() {
   roadSvg.innerHTML = buildRoadSVG(MAP_W, MAP_H, cx, cy);
   canvas.appendChild(roadSvg);
 
-  // 컬처리더 본부 (col=3~4, row=0~1 병합 4칸 중심 = 3.5, 0.5)
+  // 컬처리더 본부 (col=0~1, row=2~3 병합 4칸 중심 = 0.5, 2.5)
   var hqSize = TILE_SIZES.hq;
-  var hqPos  = blockCtr(2.5, 0.5, cx, cy);
-  var hqBot  = hqPos.y + CELL_H * 0.5;
+  var hqPos  = blockCtr(0.5, 2.5, cx, cy);
+  var hqBot  = hqPos.y + CELL_H * 0.63;
   canvas.appendChild(makeTile('central',
     hqPos.x - hqSize.w/2, hqBot - hqSize.h,
     hqSize.w, hqSize.h, '컬처리더 본부', null));
 
-  // 명예의 전당 (col=-1, row=0~1 중심)
+  // 명예의 전당 (col=-2~-1, row=2~3 병합 4칸 중심)
   var hallSize = TILE_SIZES.hall;
-  var hallPos  = blockCtr(-1, 0.5, cx, cy);
-  var hallBot  = hallPos.y + CELL_H * 0.25;
+  var hallPos  = blockCtr(-1.5, 2.5, cx, cy);
+  var hallBot  = hallPos.y + CELL_H * 0.5;
   canvas.appendChild(makeTile('hall',
     hallPos.x - hallSize.w/2, hallBot - hallSize.h,
     hallSize.w, hallSize.h, '명예의 전당 (랭킹)', null));
@@ -2103,15 +1927,17 @@ function initMap() {
     var p  = positions[i];
     var lv = branchData[BRANCHES[i]].level;
     var ts = TILE_SIZES['lv' + lv] || TILE_SIZES.lv1;
-    var bot = p.y + CELL_H * 0.25;
+    var bot = p.y + CELL_H * 0.18;  // 잔디 마름모 정중앙
     canvas.appendChild(makeTile('village',
       p.x - ts.w/2, bot - ts.h,
       ts.w, ts.h, BRANCHES[i], i));
   }
 
   var wrap = document.getElementById('mapWrap');
-  off.x = (wrap.offsetWidth  - MAP_W) / 2;
-  off.y = (wrap.offsetHeight - MAP_H) / 2;
+  // 맵이 크므로 초기 줌 조정 (화면 너비에 맞게 자동 계산)
+  zoom = Math.min(0.32, wrap.offsetWidth / MAP_W * 0.9);
+  off.x = (wrap.offsetWidth  - MAP_W * zoom) / 2;
+  off.y = (wrap.offsetHeight - MAP_H * zoom) / 2;
   applyT();
 }
 
@@ -2204,6 +2030,31 @@ function setupPinch() {
 }
 
 /* ── LOGIN ──────────────────────────────────────────── */
+
+/* ── 이름/이미지 헬퍼 ─────────────────────────────────── */
+function displayName() {
+  return (state.userTeam ? state.userTeam + "/" : "") + state.userName;
+}
+
+/* ── STORAGE 이미지 URL 헬퍼 ─────────────────────────── */
+var STORAGE_BASE = "https://rgdnkbzukfpxdrkvqhvg.supabase.co/storage/v1/object/public/game-image";
+var BRANCH_CODE = {"대구지사(영업)":"daegu-sales","부산지사(영업)":"busan-sales","울산지사(영업)":"ulsan-sales","경남지사(영업)":"gyeongnam-sales","대전·충청지사(영업)":"daejeon-sales","광주지사(영업)":"gwangju-sales","전주지사(영업)":"jeonju-sales","강북지사(서비스)":"gangbuk-service","강서지사(서비스)":"gangseo-service","인천지사(서비스)":"incheon-service","강남지사(서비스)":"gangnam-service","분당지사(서비스)":"bundang-service","수원지사(서비스)":"suwon-service","강원지사(서비스)":"gangwon-service","대구지사(서비스)":"daegu-service","울산지사(서비스)":"ulsan-service","부산지사(서비스)":"busan-service","경남지사(서비스)":"gyeongnam-service","대전·충청지사(서비스)":"daejeon-service","광주지사(서비스)":"gwangju-service","전주지사(서비스)":"jeonju-service","제주지사(서비스)":"jeju-service","강북·강원지사(설치)":"gangbuk-install","강남지사(설치)":"gangnam-install","인천지사(설치)":"incheon-install","중부지사(설치)":"jungbu-install","대구·울산지사(설치)":"daegu-install","부산·경남지사(설치)":"busan-install","대전지사(설치)":"daejeon-install","광주·전주·제주지사(설치)":"gwangju-install"};
+
+function leaderImgUrl(empId) {
+  return STORAGE_BASE + "/leaders/" + empId + ".jpg";
+}
+function activityImgUrl(branch, month) {
+  var code = BRANCH_CODE[branch] || "unknown";
+  var monthNum = String(MONTHS.indexOf(month) + 5).padStart(2, "0");
+  return STORAGE_BASE + "/activities/" + code + "_" + monthNum + ".jpg";
+}
+function imgWithFallback(url, fallbackEl) {
+  var img = new Image();
+  img.onload  = function() { fallbackEl.innerHTML = "<img src='" + url + "' style='width:100%;height:100%;object-fit:cover;border-radius:50%;'>" };
+  img.onerror = function() { /* 사진 없으면 기본 아이콘 유지 */ };
+  img.src = url;
+}
+
 function doLogin() {
   var id   = document.getElementById("inp-id").value.trim();
   var name = document.getElementById("inp-name").value.trim();
@@ -2230,7 +2081,7 @@ function doLogin() {
     document.getElementById("loginScreen").classList.remove("active");
     document.getElementById("worldScreen").classList.add("active");
     document.getElementById("hudName").innerHTML =
-      "지사 컬처리더 마을에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
+      "지사 컬처리더 시티에 오신 것을 환영합니다!<br><span style=\'font-weight:900;color:#0C4DA2\'>"
       + displayName() + "님</span>";
     document.getElementById("diaCount").textContent = state.diamonds;
 
@@ -2240,700 +2091,6 @@ function doLogin() {
     setupDrag();
     setupPinch();
   });
-}
-
-/* ── MODALS ─────────────────────────────────────────── */
-function openCentral() {
-  var el = document.getElementById("memberList");
-  el.innerHTML = "";
-  MEMBERS_DATA.forEach(function(g) {
-    var groupDiv = document.createElement("div");
-    groupDiv.className = "branch-group";
-    var hdr = document.createElement("div");
-    hdr.className = "branch-hdr";
-    hdr.textContent = g.branch;
-    groupDiv.appendChild(hdr);
-    var grid = document.createElement("div");
-    grid.className = "m-grid";
-    g.members.forEach(function(m) {
-      var card = document.createElement("div");
-      card.className = "m-card";
-      // 사진 영역
-      var photoDiv = document.createElement("div");
-      photoDiv.className = "m-photo";
-      photoDiv.style.cssText = "overflow:hidden;background:#e0edf4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px;";
-      photoDiv.textContent = "👤";
-      // Storage에서 사진 로드
-      var imgUrl = leaderImgUrl(m.emp_id);
-      var img = new Image();
-      img.onload = function() {
-        photoDiv.innerHTML = "<img src='" + imgUrl + "' style='width:100%;height:100%;object-fit:cover;border-radius:8px;'>";
-      };
-      img.src = imgUrl;
-      // 이름 + 지사명
-      var nameDiv = document.createElement("div");
-      nameDiv.className = "m-name";
-      nameDiv.textContent = m.name;
-      var branchDiv = document.createElement("div");
-      branchDiv.style.cssText = "font-size:10px;color:rgba(255,255,255,.7);margin-top:2px;";
-      branchDiv.textContent = m.branch;
-      card.appendChild(photoDiv);
-      card.appendChild(nameDiv);
-      card.appendChild(branchDiv);
-      grid.appendChild(card);
-    });
-    groupDiv.appendChild(grid);
-    el.appendChild(groupDiv);
-  });
-  document.getElementById("cntModal").classList.add("on");
-}
-
-function openVillage(branch) {
-  var d = branchData[branch];
-  document.getElementById("vTitle").textContent = branch;
-  document.getElementById("vLv").textContent    = "Lv."+d.level;
-  document.getElementById("vProg").style.width  = (d.level >= 4 ? 100 : (d.comments%2)/2*100)+"%";
-  document.getElementById("vProgInfo").textContent = d.level >= 4 ? "누적 댓글 "+d.comments+"개 | 최고 레벨입니다." : "누적 댓글 "+d.comments+"개 | 다음 레벨까지 "+(2-(d.comments%2))+"개 남음";
-
-  var leaderTabEl = document.getElementById("vTabLeader");
-  var monthTabEl  = document.getElementById("vTabMonths");
-  var panesEl     = document.getElementById("vPanes");
-  leaderTabEl.innerHTML = ""; monthTabEl.innerHTML = ""; panesEl.innerHTML = "";
-
-  // Leader tab (own row)
-  var lBtn = document.createElement("button");
-  lBtn.className   = "t-btn on";
-  lBtn.textContent = branch+" 컬처리더";
-  lBtn.dataset.vtab = "leader";
-  leaderTabEl.appendChild(lBtn);
-
-  var lPane = document.createElement("div");
-  lPane.className = "t-pane on";
-  lPane.id = "vp-leader";
-  lPane.innerHTML = "<div style='display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 0'>"
-    + "<div style='width:100%;background:#f5f9fb;border-radius:14px;padding:18px 16px;display:flex;gap:16px;align-items:center;margin-bottom:12px;border:1px solid #d0e4ee'>"
-    + "<div id='leader-photo-" + branch.replace(/[^a-zA-Z0-9]/g,'-') + "' style='width:80px;height:80px;border-radius:50%;background:#e0edf4;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;color:#7a9aaa;border:2px solid #b0cfe0;overflow:hidden'>👤</div>"
-    + "<div>"
-    + "<div style='font-size:11px;color:#00A651;font-weight:700;margin-bottom:3px'>" + branch + " 컬처리더</div>"
-    + "<div style='font-size:20px;font-weight:900;color:#0C4DA2;margin-bottom:3px'>" + d.leader + "</div>"
-    + "<div style='font-size:12px;color:#7a9aaa;font-weight:500'>" + (LEADER_RANK[branch]||"책임") + "</div>"
-    + "</div></div>"
-    + "<div style='width:100%;background:#fff;border:1px solid #d0e4ee;border-radius:12px;padding:14px 16px;font-size:13px;color:#2a4050;line-height:1.7'>"
-    + (LEADER_INTRO[branch] || (branch + " 컬처리더 " + d.leader + "입니다. 올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다!"))
-    + "<br><br>올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다! 🙌"
-    + "</div>"
-    + "<div style='background:rgba(255,255,255,.1);border-radius:11px;padding:13px 16px;font-size:13px;color:rgba(255,255,255,.85);line-height:1.7;width:100%;text-align:center'>"
-    + "안녕하세요! "+branch+" 컬처리더 "+d.leader+"입니다.<br>올 한 해도 우리 지사의 즐거운 문화를 함께 만들어가겠습니다!</div></div>";
-  panesEl.appendChild(lPane);
-
-  // 컬처리더 사진 로드 (사번 필요 - branchData에서 가져옴)
-  var leaderEmpId = branchData[branch] ? branchData[branch].leaderEmpId : null;
-  if (leaderEmpId) {
-    var photoEl = document.getElementById("leader-photo-" + branch.replace(/[^a-zA-Z0-9]/g, "-"));
-    if (photoEl) imgWithFallback(leaderImgUrl(leaderEmpId), photoEl);
-  }
-
-  // Monthly tabs
-  d.activities.forEach(function(act, idx) {
-    var btn = document.createElement("button");
-    // 12월(idx=7) 버튼 제거
-    if (idx === 7) return;
-    btn.className = "t-btn";
-    btn.textContent = MONTHS[idx]+" 활동";
-    btn.dataset.vtab = String(idx);
-    monthTabEl.appendChild(btn);
-
-    var already = state.comments.some(function(c){ return c.branch===branch && c.actIdx===idx; });
-    var pane = document.createElement("div");
-    pane.className = "t-pane";
-    pane.id = "vp-"+idx;
-
-    var cmtHtml = act.comments.map(function(c){
-      return "<div class='cmt-item'><span class='cmt-author'>"+c.author+"</span><span class='cmt-text'>"+c.text+"</span></div>";
-    }).join("");
-
-    var inputHtml = already
-      ? "<div class='already'>이미 댓글을 작성하셨습니다.</div>"
-      : "<div class='cmt-row' id='cr-"+branch+"-"+idx+"'>"
-        + "<input class='cmt-inp' id='ci-"+branch+"-"+idx+"' placeholder='댓글을 입력하세요...' maxlength='100'>"
-        + "<button class='cmt-sub' data-branch='"+branch+"' data-idx='"+idx+"'>등록</button>"
-        + "</div>";
-
-    pane.innerHTML = "<div class='act-card'>"
-      + "<div class='act-month'>"+act.month+"</div>"
-      + "<div class='act-desc'>"+act.desc+"</div>"
-      + "<div id='act-img-"+branch.replace(/[^a-zA-Z0-9]/g,'-')+"-"+idx+"' style='width:100%;margin:8px 0 4px;border-radius:10px;overflow:hidden;min-height:0'></div>"
-      + "<div class='cmt-sec'>"
-      + "<div class='cmt-cnt' id='cc-"+branch+"-"+idx+"'>댓글 "+act.comments.length+"개</div>"
-      + "<div class='cmt-list' id='cl-"+branch+"-"+idx+"'>"+cmtHtml+"</div>"
-      + inputHtml
-      + "</div></div>";
-    panesEl.appendChild(pane);
-
-    // 월별 활동 사진 로드
-    (function(b, m, i) {
-      var imgUrl = activityImgUrl(b, m);
-      var imgEl = document.getElementById("act-img-" + b.replace(/[^a-zA-Z0-9]/g,"-") + "-" + i);
-      if (!imgEl) return;
-      var img = new Image();
-      img.onload = function() {
-        imgEl.innerHTML = "<img src='" + imgUrl + "' style='width:100%;border-radius:10px;display:block;'>";
-      };
-      img.src = imgUrl;
-    })(branch, act.month, idx);
-  });
-
-  document.getElementById("vModal").classList.add("on");
-
-  // Supabase: DB에서 해당 지사 댓글 불러오기
-  loadBranchComments(branch).then(function(dbComments) {
-    if (!dbComments || dbComments.length === 0) return;
-
-    // 월별로 댓글 그룹핑
-    var byMonth = {};
-    dbComments.forEach(function(c) {
-      if (!byMonth[c.month]) byMonth[c.month] = [];
-      byMonth[c.month].push(c);
-    });
-
-    // 각 월별 댓글 목록 업데이트
-    MONTHS.forEach(function(month, mi) {
-      var clEl = document.getElementById("cl-" + branch + "-" + mi);
-      var ccEl = document.getElementById("cc-" + branch + "-" + mi);
-      if (!clEl) return;
-
-      var monthCmts = byMonth[month] || [];
-      clEl.innerHTML = monthCmts.map(function(c) {
-        return "<div class='cmt-item'>"
-          + "<span class='cmt-author'>" + c.author + "</span>"
-          + "<span class='cmt-text'>" + c.text + "</span>"
-          + "</div>";
-      }).join("");
-
-      if (ccEl) ccEl.textContent = "댓글 " + monthCmts.length + "개";
-
-      // 내가 이미 댓글 달았는지 확인 (DB 기준)
-      var myEmpId = state.userId;
-      var iAlreadyCommented = dbComments.some(function(c) {
-        return c.emp_id === myEmpId && c.month === month;
-      });
-      if (iAlreadyCommented) {
-        var crEl = document.getElementById("cr-" + branch + "-" + mi);
-        if (crEl) crEl.outerHTML = "<div class='already'>이미 댓글을 작성하셨습니다.</div>";
-      }
-    });
-  });
-}
-
-function switchVTab(branch, key) {
-  // Deactivate all tab buttons (both rows)
-  document.querySelectorAll("#vTabLeader .t-btn, #vTabMonths .t-btn").forEach(function(b){ b.classList.remove("on"); });
-  document.querySelectorAll("#vPanes .t-pane").forEach(function(p){ p.classList.remove("on"); });
-  // Activate target button
-  if (key === "leader") {
-    var lb = document.querySelector("#vTabLeader .t-btn");
-    if (lb) lb.classList.add("on");
-  } else {
-    var mbtns = document.querySelectorAll("#vTabMonths .t-btn");
-    var mi = parseInt(key);
-    if (mbtns[mi]) mbtns[mi].classList.add("on");
-  }
-  var pane = document.getElementById(key === "leader" ? "vp-leader" : "vp-"+key);
-  if (pane) pane.classList.add("on");
-}
-
-function submitComment(branch, actIdx) {
-  var inp = document.getElementById("ci-"+branch+"-"+actIdx);
-  if (!inp) return;
-  var text = inp.value.trim();
-  if (!text) { showToast("댓글을 입력해주세요"); return; }
-  if (state.comments.some(function(c){ return c.branch===branch && c.actIdx===actIdx; })) {
-    showToast("이미 댓글을 작성하셨습니다."); return;
-  }
-
-  var d = branchData[branch];
-  d.activities[actIdx].comments.push({ author:displayName(), text:text });
-  d.comments++;
-  var newLv = Math.min(4, Math.floor(d.comments/2)+1);
-  if (newLv > d.level) {
-    var oldLv = d.level;
-    d.level = newLv;
-    refreshTiles();
-    showLevelUp(state.userName, branch, oldLv, newLv);
-  }
-
-  state.diamonds++;
-  state.comments.push({ branch:branch, actIdx:actIdx, text:text, date:new Date().toLocaleDateString("ko-KR") });
-  state.log.unshift({type:"comment", date:new Date().toLocaleDateString("ko-KR"), time:new Date().toLocaleTimeString("ko"), branch:branch, month:MONTHS[actIdx], text:text, dia:"+1"});
-  document.getElementById("diaCount").textContent = state.diamonds;
-
-  // Supabase: 댓글 저장 + 다이아 업데이트 + 지사 현황 업데이트
-  saveComment(branch, MONTHS[actIdx], text);
-  updateUserDiamonds(state.diamonds);
-  logDiamond(1, "댓글", branch + " " + MONTHS[actIdx]);
-  updateBranchStatus(branch, d.comments, d.level);
-
-  var cl = document.getElementById("cl-"+branch+"-"+actIdx);
-  if (cl) cl.insertAdjacentHTML("beforeend", "<div class='cmt-item'><span class='cmt-author'>"+displayName()+"</span><span class='cmt-text'>"+text+"</span></div>");
-  var cc = document.getElementById("cc-"+branch+"-"+actIdx);
-  if (cc) cc.textContent = "댓글 "+d.activities[actIdx].comments.length+"개";
-  document.getElementById("vLv").textContent = "Lv."+d.level;
-  document.getElementById("vProg").style.width = (d.level >= 4 ? 100 : (d.comments%2)/2*100)+"%";
-  document.getElementById("vProgInfo").textContent = d.level >= 4 ? "누적 댓글 "+d.comments+"개 | 최고 레벨입니다." : "누적 댓글 "+d.comments+"개 | 다음 레벨까지 "+(2-(d.comments%2))+"개 남음";
-
-  var cr = document.getElementById("cr-"+branch+"-"+actIdx);
-  if (cr) cr.outerHTML = "<div class='already'>이미 댓글을 작성하셨습니다.</div>";
-  showToast("댓글 등록 완료! 다이아 1개 획득!");
-}
-
-function openMyActivity() {
-  document.getElementById("sMyCmt").textContent = state.comments.length;
-  document.getElementById("sMyDia").textContent = state.diamonds;
-  document.getElementById("sMyRlt").textContent = state.rouletteCount;
-  document.getElementById("sMyWin").textContent = state.wins.filter(function(w){ return w!=="다음기회에"; }).length;
-  var log = document.getElementById("actLog");
-  log.innerHTML = state.log.length === 0
-    ? "<div style='font-size:12px;color:rgba(255,255,255,.4);padding:10px 0'>아직 활동 기록이 없습니다.</div>"
-    : state.log.slice(0,20).map(function(l){ return "<div class='log-item'>"+l+"</div>"; }).join("");
-  document.getElementById("myModal").classList.add("on");
-}
-
-/* ── ROULETTE ───────────────────────────────────────── */
-var wheelRot = -Math.PI/2 - Math.PI/8;
-// 룰렛 확률 구간 (Supabase에서 불러온 값으로 덮어씀)
-var ROULETTE_POOL = [];
-var ROULETTE_PROBS = [
-  {name:"커피쿠폰",   start:0.00, end:0.10},
-  {name:"다이아 10개",start:0.10, end:0.30},
-  {name:"다이아 5개", start:0.30, end:0.60},
-  {name:"다음기회에", start:0.60, end:1.00}
-]; // align slice 0 to 12 o'clock on load
-
-function drawWheel() {
-  var cv = document.getElementById("rltCanvas");
-  if (!cv) return;
-  var ctx = cv.getContext("2d");
-  var W=260, cx=130, cy=130, r=122;
-  ctx.clearRect(0,0,W,W);
-  var n=ROULETTE.length, slice=Math.PI*2/n;
-
-  // Draw slices - always use fixed color, never change on stop
-  ROULETTE.forEach(function(item, i) {
-    var s = wheelRot+i*slice, e = s+slice;
-    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,r,s,e); ctx.closePath();
-    ctx.fillStyle = item.color;
-    ctx.fill();
-    ctx.strokeStyle = "rgba(255,255,255,.4)"; ctx.lineWidth=1.5; ctx.stroke();
-    ctx.save(); ctx.translate(cx,cy); ctx.rotate(s+slice/2);
-    ctx.textAlign="right"; ctx.fillStyle="#fff";
-    ctx.font="bold 11px 'Noto Sans KR',sans-serif";
-    ctx.shadowColor="rgba(0,0,0,.6)"; ctx.shadowBlur=3;
-    ctx.fillText(item.name, r-10, 4); ctx.restore();
-  });
-
-  // Center circle
-  ctx.beginPath(); ctx.arc(cx,cy,13,0,Math.PI*2);
-  ctx.fillStyle="rgba(18,42,56,.95)"; ctx.fill();
-  ctx.strokeStyle="rgba(255,255,255,.4)"; ctx.lineWidth=2; ctx.stroke();
-
-  // Red pizza-slice indicator at 12 o'clock - outline only, shadow, no fill
-  var halfArc = slice * 0.52;
-  var angleStart = -Math.PI/2 - halfArc;
-  var angleEnd   = -Math.PI/2 + halfArc;
-  var outerR = r + 3;
-  var innerR = 14;
-  // Shadow setup
-  ctx.save();
-  ctx.shadowColor = "rgba(180,0,0,0.55)";
-  ctx.shadowBlur = 10;
-  ctx.shadowOffsetX = 0;
-  ctx.shadowOffsetY = 2;
-  // Outer arc
-  ctx.beginPath();
-  ctx.arc(cx, cy, outerR, angleStart, angleEnd);
-  ctx.strokeStyle = "#e53935";
-  ctx.lineWidth = 5;
-  ctx.lineCap = "round";
-  ctx.stroke();
-  // Two radius lines
-  ctx.beginPath();
-  ctx.moveTo(cx + innerR*Math.cos(angleStart), cy + innerR*Math.sin(angleStart));
-  ctx.lineTo(cx + outerR*Math.cos(angleStart), cy + outerR*Math.sin(angleStart));
-  ctx.moveTo(cx + innerR*Math.cos(angleEnd),   cy + innerR*Math.sin(angleEnd));
-  ctx.lineTo(cx + outerR*Math.cos(angleEnd),   cy + outerR*Math.sin(angleEnd));
-  ctx.strokeStyle = "#e53935";
-  ctx.lineWidth = 5;
-  ctx.lineCap = "round";
-  ctx.stroke();
-  ctx.restore();
-}
-
-function openRoulette() {
-  document.getElementById("rltModal").classList.add("on");
-  setTimeout(function(){ drawWheel(); }, 30);
-  // Sync diamond counter
-  document.getElementById("rltDiaCount").textContent = state.diamonds;
-  var ch = document.getElementById("rltDiaChange");
-  ch.textContent = ""; ch.className = "rlt-dia-change";
-  var ne = document.getElementById("notEnough");
-  if (state.diamonds < 1) {
-    ne.textContent = "다이아가 부족합니다. (현재 "+state.diamonds+"개 보유)";
-    ne.style.display = "block";
-  } else {
-    ne.style.display = "none";
-  }
-  document.getElementById("spinBtn").disabled = false;
-}
-
-function spinRoulette() {
-  if (state.diamonds < 1) { var ne=document.getElementById("notEnough"); ne.textContent="다이아가 부족합니다. (현재 "+state.diamonds+"개 보유)"; ne.style.display="block"; return; }
-  state.diamonds -= 1; state.rouletteCount++;
-  // Show diamond deduction animation
-  document.getElementById("rltDiaCount").textContent = state.diamonds;
-  (function(){
-    var ch = document.getElementById("rltDiaChange");
-    ch.textContent = "-1 💎"; ch.className = "rlt-dia-change minus show";
-    setTimeout(function(){ ch.classList.remove("show"); }, 2000);
-  })();
-  state.log.unshift({type:"spend", date:new Date().toLocaleDateString("ko-KR"), time:new Date().toLocaleTimeString("ko"), diaChange:"-1"});
-  document.getElementById("diaCount").textContent = state.diamonds;
-
-  // Supabase: 다이아 차감 기록
-  updateUserDiamonds(state.diamonds, state.rouletteCount);
-  logDiamond(-1, "룰렛소모", "룰렛 응모");
-  document.getElementById("spinBtn").disabled = true;
-  document.getElementById("notEnough").style.display = "none";
-  // ── 풀 기반 당첨 결정 ─────────────────────────────
-  var wonName = "다음기회에";
-
-  if (ROULETTE_POOL.length === 0) {
-    // 풀 미로드 시 기본 확률로 폴백
-    var rand = Math.random();
-    wonName = rand < 0.05 ? "커피쿠폰" : rand < 0.15 ? "다이아 10개" : rand < 0.30 ? "다이아 5개" : "다음기회에";
-  } else {
-    // 남은 티켓 합계 계산
-    var totalLeft = ROULETTE_POOL.reduce(function(s, r) { return s + r.remaining; }, 0);
-
-    if (totalLeft <= 0) {
-      // 전부 소진 → 새 회차 시작
-      console.log("룰렛 풀 소진! 새 회차 시작...");
-      resetRoulettePool();
-      wonName = "다음기회에"; // 리셋 중이니 이번 한 번은 다음기회에
-    } else {
-      // 남은 티켓 중 랜덤 1개 뽑기
-      var pick = Math.floor(Math.random() * totalLeft);
-      var cumul = 0;
-      for (var pi = 0; pi < ROULETTE_POOL.length; pi++) {
-        cumul += ROULETTE_POOL[pi].remaining;
-        if (pick < cumul) {
-          wonName = ROULETTE_POOL[pi].name;
-          // 해당 아이템 remaining -1
-          ROULETTE_POOL[pi].remaining -= 1;
-          // Supabase 업데이트
-          sbFetch("roulette_pool?id=eq." + ROULETTE_POOL[pi].id, "PATCH",
-            { remaining: ROULETTE_POOL[pi].remaining })
-            .then(function(resp) {
-              // DB 업데이트 성공 확인 (204여야 함)
-              if (resp && resp.status === 400) {
-                // 제약조건 위반 (remaining 음수) → 로컬도 되돌리고 다른 아이템 시도
-                ROULETTE_POOL[pi].remaining += 1; // 되돌리기
-                console.warn("remaining 제약 위반, 다른 아이템으로 재시도");
-              }
-            })
-            .catch(function(e) { 
-              ROULETTE_POOL[pi].remaining += 1; // 실패 시 되돌리기
-              console.warn("풀 업데이트 실패:", e.message); 
-            });
-          break;
-        }
-      }
-    }
-  }
-
-  // ROULETTE 배열에서 해당 아이템의 인덱스 찾기 (휠 정지 위치)
-  var ri = ROULETTE.length - 1;
-  for (var wi = 0; wi < ROULETTE.length; wi++) {
-    if (ROULETTE[wi].name === wonName) { ri = wi; break; }
-  }
-  var slice = Math.PI*2/ROULETTE.length;
-  var NEEDLE = -Math.PI/2;
-  var delta = (NEEDLE - ri*slice - slice/2) - wheelRot;
-  delta = delta % (Math.PI*2);
-  if (delta <= 0) delta += Math.PI*2;
-  var totalSpin = Math.PI*2*5 + delta;
-  var startRot = wheelRot, dur=4200, t0=performance.now();
-
-  function animate(now) {
-    var p = Math.min((now-t0)/dur, 1);
-    var ease = 1 - Math.pow(1-p, 3);
-    wheelRot = startRot + totalSpin*ease;
-    drawWheel();
-    if (p < 1) { requestAnimationFrame(animate); return; }
-    wheelRot = startRot + totalSpin;
-    drawWheel();
-    var item = ROULETTE[ri];
-    state.wins.push(item.name);
-    state.log.unshift({type:"roulette", date:new Date().toLocaleDateString("ko-KR"), time:new Date().toLocaleTimeString("ko"), result:item.name, diaChange: item.name==="다이아 10개"?"+10":item.name==="다이아 5개"?"+5":"0"});
-    // Supabase: 룰렛 결과 기록
-    logRoulette(item.name);
-    if (item.name === "다이아 10개") {
-      state.diamonds += 10;
-      document.getElementById("diaCount").textContent = state.diamonds;
-      document.getElementById("rltDiaCount").textContent = state.diamonds;
-      // Supabase: 다이아 적립
-      logDiamond(10, "룰렛당첨", "다이아 10개");
-      updateUserDiamonds(state.diamonds);
-      (function(){
-        var ch = document.getElementById("rltDiaChange");
-        ch.textContent = "+10 💎"; ch.className = "rlt-dia-change plus show";
-        setTimeout(function(){ ch.classList.remove("show"); }, 3000);
-      })();
-    }
-    if (item.name === "다이아 5개") {
-      state.diamonds += 5;
-      document.getElementById("diaCount").textContent = state.diamonds;
-      document.getElementById("rltDiaCount").textContent = state.diamonds;
-      // Supabase: 다이아 적립
-      logDiamond(5, "룰렛당첨", "다이아 5개");
-      updateUserDiamonds(state.diamonds);
-      (function(){
-        var ch = document.getElementById("rltDiaChange");
-        ch.textContent = "+5 💎"; ch.className = "rlt-dia-change plus show";
-        setTimeout(function(){ ch.classList.remove("show"); }, 3000);
-      })();
-    }
-    document.getElementById("spinBtn").disabled = false;
-    // Show result as popup (not inline - keeps modal size fixed)
-    showRltPopup(item.name);
-  }
-  requestAnimationFrame(animate);
-}
-
-/* ── UTILS ──────────────────────────────────────────── */
-var toastTimer;
-function showToast(msg) {
-  var el = document.getElementById("toast");
-  el.textContent = msg; el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 2600);
-}
-
-/* ── WIRE UP ALL EVENTS ─────────────────────────────── */
-window.addEventListener("DOMContentLoaded", function() {
-
-  // LOGIN
-  document.getElementById("loginBtn").addEventListener("click", doLogin);
-  document.getElementById("inp-id").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
-  document.getElementById("inp-name").addEventListener("keydown", function(e){ if(e.key==="Enter") doLogin(); });
-
-  // BOTTOM BUTTONS
-  document.getElementById("btnZoomIn").addEventListener("click", function(){
-    var wrap=document.getElementById("mapWrap"), cx=wrap.offsetWidth/2, cy=wrap.offsetHeight/2;
-    var nz=Math.min(ZOOM_MAX,zoom+0.2), s=nz/zoom;
-    off.x=cx-s*(cx-off.x); off.y=cy-s*(cy-off.y); zoom=nz; applyT();
-  });
-  document.getElementById("btnZoomOut").addEventListener("click", function(){
-    var wrap=document.getElementById("mapWrap"), cx=wrap.offsetWidth/2, cy=wrap.offsetHeight/2;
-    var nz=Math.max(ZOOM_MIN,zoom-0.2), s=nz/zoom;
-    off.x=cx-s*(cx-off.x); off.y=cy-s*(cy-off.y); zoom=nz; applyT();
-  });
-  if (document.getElementById("btnMyAct")) document.getElementById("btnMyAct").addEventListener("click", openMyActivity);
-  document.getElementById("btnRanking").addEventListener("click", openRanking);
-  document.getElementById("btnMyStatus").addEventListener("click", openMyStatus);
-  document.getElementById("btnRlt").addEventListener("click", openRoulette);
-  document.getElementById("spinBtn").addEventListener("click", spinRoulette);
-
-  // CLOSE BUTTONS (data-modal attribute)
-  document.querySelectorAll(".m-close").forEach(function(btn) {
-    btn.addEventListener("click", function() {
-      var id = btn.dataset.modal;
-      document.getElementById(id).classList.remove("on");
-    });
-  });
-
-  // OVERLAY CLICK TO CLOSE
-  document.querySelectorAll(".overlay").forEach(function(o) {
-    o.addEventListener("click", function(e) {
-      if (e.target === o) o.classList.remove("on");
-    });
-    o.addEventListener("touchmove", function(e){ e.stopPropagation(); }, {passive:true});
-  });
-
-  // CENTRAL TABS
-  document.getElementById("cntTabs").addEventListener("click", function(e) {
-    var btn = e.target.closest(".t-btn");
-    if (!btn) return;
-    document.querySelectorAll("#cntTabs .t-btn").forEach(function(b){ b.classList.remove("on"); });
-    document.querySelectorAll("#cntModal .t-pane").forEach(function(p){ p.classList.remove("on"); });
-    btn.classList.add("on");
-    var pane = document.getElementById(btn.dataset.pane);
-    if (pane) pane.classList.add("on");
-  });
-
-  // VILLAGE TABS
-  // Village tabs: listen on both leader row and months row
-  function handleVTabClick(e) {
-    var btn = e.target.closest(".t-btn");
-    if (!btn) return;
-    var branch = document.getElementById("vTitle").textContent;
-    switchVTab(branch, btn.dataset.vtab);
-  }
-  var leaderTabEl2 = document.getElementById("vTabLeader");
-  var monthTabEl2  = document.getElementById("vTabMonths");
-  if (leaderTabEl2) leaderTabEl2.addEventListener("click", handleVTabClick);
-  if (monthTabEl2)  monthTabEl2.addEventListener("click",  handleVTabClick);
-
-  // COMMENT SUBMIT (event delegation)
-  document.getElementById("vPanes").addEventListener("click", function(e) {
-    var btn = e.target.closest(".cmt-sub");
-    if (!btn) return;
-    submitComment(btn.dataset.branch, parseInt(btn.dataset.idx));
-  });
-
-  // iOS visual viewport resize
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener("resize", function() {
-      var vv = window.visualViewport;
-      document.querySelectorAll(".overlay.on").forEach(function(el) {
-        el.style.height = vv.height+"px"; el.style.top = vv.offsetTop+"px";
-      });
-    });
-  }
-});
-
-
-
-
-/* 이름 표시 헬퍼: 본부/이름 형식 */
-function displayName() {
-  return (state.userTeam ? state.userTeam + "/" : "") + state.userName;
-}
-
-/* ── STORAGE 이미지 URL 헬퍼 ─────────────────────────── */
-var STORAGE_BASE = "https://rgdnkbzukfpxdrkvqhvg.supabase.co/storage/v1/object/public/game-image";
-var BRANCH_CODE = {"대구지사(영업)":"daegu-sales","부산지사(영업)":"busan-sales","울산지사(영업)":"ulsan-sales","경남지사(영업)":"gyeongnam-sales","대전·충청지사(영업)":"daejeon-sales","광주지사(영업)":"gwangju-sales","전주지사(영업)":"jeonju-sales","강북지사(서비스)":"gangbuk-service","강서지사(서비스)":"gangseo-service","인천지사(서비스)":"incheon-service","강남지사(서비스)":"gangnam-service","분당지사(서비스)":"bundang-service","수원지사(서비스)":"suwon-service","강원지사(서비스)":"gangwon-service","대구지사(서비스)":"daegu-service","울산지사(서비스)":"ulsan-service","부산지사(서비스)":"busan-service","경남지사(서비스)":"gyeongnam-service","대전·충청지사(서비스)":"daejeon-service","광주지사(서비스)":"gwangju-service","전주지사(서비스)":"jeonju-service","제주지사(서비스)":"jeju-service","강북·강원지사(설치)":"gangbuk-install","강남지사(설치)":"gangnam-install","인천지사(설치)":"incheon-install","중부지사(설치)":"jungbu-install","대구·울산지사(설치)":"daegu-install","부산·경남지사(설치)":"busan-install","대전지사(설치)":"daejeon-install","광주·전주·제주지사(설치)":"gwangju-install"};
-
-function leaderImgUrl(empId) {
-  return STORAGE_BASE + "/leaders/" + empId + ".jpg";
-}
-function activityImgUrl(branch, month) {
-  var code = BRANCH_CODE[branch] || "unknown";
-  var monthNum = String(MONTHS.indexOf(month) + 5).padStart(2, "0");
-  return STORAGE_BASE + "/activities/" + code + "_" + monthNum + ".jpg";
-}
-function imgWithFallback(url, fallbackEl) {
-  var img = new Image();
-  img.onload  = function() { fallbackEl.innerHTML = "<img src='" + url + "' style='width:100%;height:100%;object-fit:cover;border-radius:50%;'>" };
-  img.onerror = function() { /* 사진 없으면 기본 아이콘 유지 */ };
-  img.src = url;
-}
-
-
-/* 검정 배경 제거 (Canvas 픽셀 처리) */
-function removeBlackBg(imgEl, threshold) {
-  var t = threshold || 40;
-  var cvs = document.createElement("canvas");
-  cvs.width  = imgEl.naturalWidth  || imgEl.width;
-  cvs.height = imgEl.naturalHeight || imgEl.height;
-  var ctx2 = cvs.getContext("2d");
-  ctx2.drawImage(imgEl, 0, 0);
-  var id = ctx2.getImageData(0, 0, cvs.width, cvs.height);
-  var d = id.data;
-  for (var i = 0; i < d.length; i += 4) {
-    var r = d[i], g = d[i+1], b = d[i+2];
-    // 어두운 픽셀 투명 처리
-    if (r < t && g < t && b < t) {
-      d[i+3] = 0;
-    } else if (r < t*2 && g < t*2 && b < t*2) {
-      // 경계 픽셀은 반투명
-      var darkness = 1 - Math.max(r, g, b) / (t*2);
-      d[i+3] = Math.round(d[i+3] * (1 - darkness));
-    }
-  }
-  ctx2.putImageData(id, 0, 0);
-  imgEl.src = cvs.toDataURL("image/png");
-}
-
-
-
-/* 아이소메트릭 도로 + 잔디 SVG */
-
-
-/* 아이소메트릭 그리드 설정 */
-var CELL_W = 280;
-var CELL_H = 140;
-var ROAD_W = 40;
-var GRID_COLS = 6;
-var GRID_ROWS = 6;
-var COL_OFF = 3;
-var ROW_OFF = 3;
-
-function isoPos(col, row, cx, cy) {
-  return {
-    x: cx + (col - row) * CELL_W / 2,
-    y: cy + (col + row) * CELL_H / 2
-  };
-}
-
-function blockCenter(col, row, cx, cy) {
-  return isoPos(col + 0.5 - COL_OFF, row + 0.5 - ROW_OFF, cx, cy);
-}
-
-function buildRoadSVG(W, H, cx, cy) {
-  var rw = ROAD_W;
-  var rc = "#AAAAA0";
-  var dc = "rgba(255,255,255,0.55)";
-
-  // 잔디 패턴 정의
-  var svg = "<defs><pattern id='gp' x='0' y='0' width='50' height='50' patternUnits='userSpaceOnUse'>"
-    + "<rect width='50' height='50' fill='#C2E87A'/>"
-    + "<circle cx='12' cy='10' r='2' fill='#B0D868' opacity='0.5'/>"
-    + "<circle cx='32' cy='8' r='1.5' fill='#D0F088' opacity='0.45'/>"
-    + "<circle cx='45' cy='28' r='2' fill='#B0D868' opacity='0.45'/>"
-    + "<circle cx='18' cy='38' r='1.5' fill='#D0F088' opacity='0.4'/>"
-    + "<circle cx='40' cy='44' r='2' fill='#B0D868' opacity='0.5'/>"
-    + "</pattern></defs>";
-
-  // 배경 잔디
-  svg += "<rect width='" + W + "' height='" + H + "' fill='url(#gp)'/>";
-
-  var roads = "";
-  var dashes = "";
-
-  function addRoad(c1,r1,c2,r2) {
-    var p1 = isoPos(c1-COL_OFF, r1-ROW_OFF, cx, cy);
-    var p2 = isoPos(c2-COL_OFF, r2-ROW_OFF, cx, cy);
-    var dx = p2.x-p1.x, dy = p2.y-p1.y;
-    var L = Math.sqrt(dx*dx+dy*dy);
-    if (L<1) return;
-    var nx=-dy/L*rw/2, ny=dx/L*rw/2;
-    roads += "<polygon points='"
-      +(p1.x+nx)+","+(p1.y+ny)+" "
-      +(p1.x-nx)+","+(p1.y-ny)+" "
-      +(p2.x-nx)+","+(p2.y-ny)+" "
-      +(p2.x+nx)+","+(p2.y+ny)
-      +"' fill='"+rc+"'/>";
-    dashes += "<line x1='"+p1.x+"' y1='"+p1.y+"' x2='"+p2.x+"' y2='"+p2.y
-      +"' stroke='"+dc+"' stroke-width='2' stroke-dasharray='14,10'/>";
-  }
-
-  // row 경계선들 (탑뷰 가로 도로: col 0→GC)
-  for (var r = 0; r <= GRID_ROWS; r++) {
-    addRoad(0, r, GRID_COLS, r);
-  }
-  // 명예의전당 위쪽 가로 도로 (row=-1 경계)
-  addRoad(1, -1, 3, -1);
-
-  // col 경계선들 (탑뷰 세로 도로: row 0→GR)
-  for (var c = 0; c <= GRID_COLS; c++) {
-    addRoad(c, 0, c, GRID_ROWS);
-  }
-  // 명예의전당 좌우 세로 도로 (col=1,3, row=-1→0)
-  addRoad(1, -1, 1, 0);
-  addRoad(3, -1, 3, 0);
-
-  svg += roads + dashes;
-  return svg;
 }
 
 
