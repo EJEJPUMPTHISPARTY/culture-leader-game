@@ -183,6 +183,27 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
   padding:7px 26px;height:50px;border-radius:25px;
 }
 
+/* ── 미확인 알림 ─── */
+.tile-alert{
+  position:absolute;top:-10px;right:-10px;
+  font-size:28px;line-height:1;
+  z-index:10;pointer-events:none;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));
+  animation:alertBounce 1.5s ease-in-out infinite;
+}
+@keyframes alertBounce{
+  0%,100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+.t-btn.has-unread{position:relative;}
+.t-btn.has-unread::after{
+  content:'';
+  position:absolute;top:4px;right:4px;
+  width:8px;height:8px;
+  background:#e53935;border-radius:50%;
+  border:1.5px solid #fff;
+}
+
 /* ── TOOLTIP ─── */
 .tooltip{
   position:fixed;background:rgba(18,42,56,.95);color:#fff;font-size:12px;
@@ -507,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 10:01 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 10:54 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -1139,9 +1160,9 @@ function openVillage(branch) {
     btn.className = "t-btn";
     btn.textContent = MONTHS[idx]+" 활동";
     btn.dataset.vtab = String(idx);
-    monthTabEl.appendChild(btn);
-
     var already = state.comments.some(function(c){ return c.branch===branch && c.actIdx===idx; });
+    if (!already) btn.classList.add('has-unread');
+    monthTabEl.appendChild(btn);
     var pane = document.createElement("div");
     pane.className = "t-pane";
     pane.id = "vp-"+idx;
@@ -1282,6 +1303,20 @@ function submitComment(branch, actIdx) {
   var cr = document.getElementById("cr-"+branch+"-"+actIdx);
   if (cr) cr.outerHTML = "<div class='already'>이미 댓글을 작성하셨습니다.</div>";
   showToast("댓글 등록 완료! 다이아 1개 획득!");
+
+  // 해당 탭 빨간점 제거
+  var unreadBtn = document.querySelector("#vTabMonths .t-btn[data-vtab='" + actIdx + "']");
+  if (unreadBtn) unreadBtn.classList.remove('has-unread');
+
+  // 모든 월 완료 시 건물 💡 뱃지 제거
+  var allDone = branchData[branch].activities.every(function(act, idx) {
+    if (idx === 7) return true;
+    return state.comments.some(function(c){ return c.branch===branch && c.actIdx===idx; });
+  });
+  if (allDone) {
+    var alertBadge = document.querySelector('.tile-alert#alert-' + (BRANCHES.indexOf(branch)));
+    if (alertBadge) alertBadge.remove();
+  }
 }
 
 function openMyActivity() {
@@ -1828,6 +1863,22 @@ function makeTile(type, x, y, w, h, label, bi) {
     setTimeout(function(){ img.src = src + '?t=' + Date.now(); }, 500);
   };
   el.appendChild(img);
+
+  // 미확인 댓글 알림 뱃지 (지사 건물만)
+  if (type === 'village') {
+    var d2 = branchData[BRANCHES[bi]];
+    var hasUnread = d2.activities.some(function(act, idx) {
+      if (idx === 7) return false; // 12월 제외
+      return !state.comments.some(function(c){ return c.branch===BRANCHES[bi] && c.actIdx===idx; });
+    });
+    if (hasUnread) {
+      var badge = document.createElement('div');
+      badge.className = 'tile-alert';
+      badge.id = 'alert-' + bi;
+      badge.textContent = '💡';
+      el.appendChild(badge);
+    }
+  }
 
   // 네임플레이트
   var np = document.createElement('div');
