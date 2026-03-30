@@ -528,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 11:15 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 11:20 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -1176,8 +1176,8 @@ function openVillage(branch) {
     btn.className = "t-btn";
     btn.textContent = MONTHS[idx]+" 활동";
     btn.dataset.vtab = String(idx);
-    var already = state.comments.some(function(c){ return c.branch===branch && c.actIdx===idx; });
-    if (!already) btn.classList.add('has-unread');
+    // 초기에는 모두 빨간점 표시, DB 로드 후 댓글 있는 탭만 제거
+    btn.classList.add('has-unread');
     monthTabEl.appendChild(btn);
     var pane = document.createElement("div");
     pane.className = "t-pane";
@@ -1255,8 +1255,31 @@ function openVillage(branch) {
       if (iAlreadyCommented) {
         var crEl = document.getElementById("cr-" + branch + "-" + mi);
         if (crEl) crEl.outerHTML = "<div class='already'>이미 댓글을 작성하셨습니다.</div>";
+        // DB 기준으로 이미 댓글 달았으면 탭 빨간점 제거
+        var tabBtn = document.querySelector("#vTabMonths .t-btn[data-vtab='" + mi + "']");
+        if (tabBtn) tabBtn.classList.remove('has-unread');
       }
     });
+
+    // DB 기준 전구 뱃지 재계산
+    // 내가 댓글 단 월 목록
+    var myCommentedMonths = MONTHS.filter(function(month, mi) {
+      if (mi === 7) return true; // 12월 제외
+      return dbComments.some(function(c) {
+        return c.emp_id === state.userId && c.month === month;
+      });
+    });
+    var allCommented = MONTHS.every(function(month, mi) {
+      if (mi === 7) return true;
+      return dbComments.some(function(c) {
+        return c.emp_id === state.userId && c.month === month;
+      });
+    });
+    if (allCommented) {
+      var bi = BRANCHES.indexOf(branch);
+      var alertBadge = document.getElementById('alert-' + bi);
+      if (alertBadge) alertBadge.remove();
+    }
   });
 }
 
