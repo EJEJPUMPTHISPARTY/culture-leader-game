@@ -528,7 +528,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 13:29 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 15:04 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -1776,10 +1776,10 @@ var GRID_ROWS = 6;
 
 /* 타일 크기 */
 var TILE_SIZES = {
-  lv1:  {w:200, h:170},
-  lv2:  {w:240, h:265},
+  lv1:  {w:270, h:170},
+  lv2:  {w:270, h:265},
   lv3:  {w:270, h:320},
-  lv4:  {w:290, h:550},
+  lv4:  {w:270, h:550},
   hq:   {w:900, h:736},
   hall: {w:612, h:900}
 };
@@ -2047,7 +2047,9 @@ function initMap() {
     var p  = positions[i];
     var lv = branchData[BRANCHES[i]].level;
     var ts = TILE_SIZES['lv' + lv] || TILE_SIZES.lv1;
-    var bot = p.y + CELL_H * 0.18;  // 잔디 마름모 정중앙
+    // lv1 바닥 꼭짓점 기준으로 고정 (레벨 올라도 바닥 위치 동일)
+    var baseLv1 = TILE_SIZES.lv1;
+    var bot = p.y + CELL_H * 0.18 + baseLv1.h;
     canvas.appendChild(makeTile('village',
       p.x - ts.w/2, bot - ts.h,
       ts.w, ts.h, BRANCHES[i], i));
