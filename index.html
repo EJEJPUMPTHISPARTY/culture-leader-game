@@ -507,7 +507,7 @@ input, textarea, .cmt-item, .info-text, .act-desc, .notice-body {
 <!-- ═══ LOGIN ═══ -->
 <div class="screen active" id="loginScreen">
   <p class="login-title">지사 컬처리더 시티에 오신 것을<br>환영합니다!</p>
-  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 09:57 KST</div>
+  <div style="font-size:11px;color:rgba(255,255,255,0.6);margin-bottom:6px;text-align:center;letter-spacing:0.5px;">ver. 2026-03-30 10:01 KST</div>
   <div class="login-box">
     <div class="login-row">
       <label>사번</label>
@@ -1178,7 +1178,7 @@ function openVillage(branch) {
         imgEl.innerHTML = "<img src='" + imgUrl + "' style='width:100%;border-radius:10px;display:block;'>";
       };
       img.src = imgUrl;
-    })(branch, act.month, idx);
+    })(branch, MONTHS[idx], idx);
   });
 
   document.getElementById("vModal").classList.add("on");
